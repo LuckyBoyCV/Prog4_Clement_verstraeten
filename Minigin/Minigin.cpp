@@ -100,7 +100,23 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 void dae::Minigin::RunOneFrame()
 {
+	const auto Current = Clock::now();
+
+	float Delta_Time = std::chrono::duration<float>(Current - m_LastTime).count();
+
+	m_LastTime = Current;
+	if (Delta_Time > Max_Delta)
+	{
+		Delta_Time = Max_Delta;
+	}
+
 	m_quit = !InputManager::GetInstance().ProcessInput();
-	SceneManager::GetInstance().Update();
+	m_Lag += Delta_Time;
+	while (m_Lag > Fixed_Time_Step)
+	{
+		m_Lag -= Fixed_Time_Step;
+	}
+	SceneManager::GetInstance().Update(Delta_Time);
 	Renderer::GetInstance().Render();
+
 }
