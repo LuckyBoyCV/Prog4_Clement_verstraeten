@@ -111,11 +111,6 @@ void dae::Minigin::RunOneFrame()
 	}
 
 	m_quit = !InputManager::GetInstance().ProcessInput();
-	m_Lag += Delta_Time;
-	while (m_Lag > Fixed_Time_Step)
-	{
-		m_Lag -= Fixed_Time_Step;
-	}
 	SceneManager::GetInstance().Update(Delta_Time);
 	Renderer::GetInstance().Render();
 

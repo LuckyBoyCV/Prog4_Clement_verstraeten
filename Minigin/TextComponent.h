@@ -4,10 +4,12 @@
 #include <SDL3/SDL.h>
 #include "Component.h"
 #include "Texture2D.h"
+#include "RenderComponent.h"
 
 namespace dae
 { 
 class Font;
+
 
 
 class TextComponent final : public Component
@@ -32,7 +34,7 @@ private:
 	SDL_Color m_Color{ 255, 255, 255, 255 };
 	std::string m_Text;
 	std::shared_ptr<Font> m_pFont;
-	std::unique_ptr<Texture2D> m_pTexture{};
+	RenderComponent m_renderComponent;
 
 
 };

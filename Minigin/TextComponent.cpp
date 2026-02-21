@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Font.h"
 #include "Texture2D.h"
+#include "RenderComponent.h"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <stdexcept>
 
@@ -10,15 +11,16 @@ dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, s
 	: Component(pOwner)
 	, m_Text(text)
 	, m_pFont(font)
+	, m_renderComponent(pOwner)
 {
-
+	
 }
 
-void dae::TextComponent::Update(float deltatime)
+void dae::TextComponent::Update(float )
 {
 	if(m_NeedsUpdate)
 	{
-		(void)deltatime;
+		
 		regerateTexture();
 		m_NeedsUpdate = false;
 	}
@@ -26,11 +28,7 @@ void dae::TextComponent::Update(float deltatime)
 
 void dae::TextComponent::Render() const
 {
-	if (!m_pTexture)
-		return;
-
-	const auto& pos = m_Owner->GetTransform().GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+	m_renderComponent.Render();
 }
 
 void dae::TextComponent::SetText(const std::string& text)
@@ -67,5 +65,5 @@ void dae::TextComponent::regerateTexture()
 	if (!sdlTex)
 		throw std::runtime_error(std::string("TextComponent: ") + SDL_GetError());
 
-	m_pTexture = std::make_unique<Texture2D>(sdlTex);
+	m_renderComponent.SetTexture(std::make_shared<Texture2D>(sdlTex));
 }

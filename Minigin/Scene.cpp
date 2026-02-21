@@ -32,6 +32,12 @@ void Scene::Update(float deltatime)
 	{
 		object->Update( deltatime);
 	}
+
+	m_objects.erase(
+		std::remove_if(m_objects.begin(), m_objects.end(),
+			[](const std::unique_ptr<GameObject>& obj) { return obj->IsMarkedForDeletion(); }),
+		m_objects.end()
+	);
 }
 
 void Scene::Render() const

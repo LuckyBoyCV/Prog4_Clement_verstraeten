@@ -1,5 +1,5 @@
 #pragma once
-#pragma once
+
 
 namespace dae
 {
@@ -20,6 +20,6 @@ namespace dae
 		Component& operator=(Component&&) = delete;
 
 	protected:
-		GameObject* m_Owner;
+		GameObject*  const m_Owner;
 	};
 }

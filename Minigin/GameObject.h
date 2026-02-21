@@ -14,6 +14,9 @@ namespace dae
 		void Update(float deltaTime);
 		void Render() const;
 
+		void Destroy() { m_markedForDeletion = true; }
+		bool IsMarkedForDeletion() const { return m_markedForDeletion; }
+
 		template<typename T, typename... Args>
 		T* AddComponent(Args&&... args)
 		{
@@ -62,5 +65,6 @@ namespace dae
 	private:
 		Transform m_transform{};
 		std::vector<std::unique_ptr<Component>> m_components;
+		bool m_markedForDeletion{ false };
 	};
 }
