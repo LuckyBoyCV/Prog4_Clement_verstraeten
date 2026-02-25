@@ -11,7 +11,7 @@ namespace dae
 		explicit Component(GameObject* owner) : m_Owner(owner) {}
 		virtual ~Component() = default;
 
-		virtual void Update(float deltaTime) { (void)deltaTime; }
+		virtual void Update(float) {};
 		virtual void Render() const {}
 
 		Component(const Component&) = delete;

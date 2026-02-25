@@ -21,8 +21,9 @@ void dae::RenderComponent::Render() const
 {
 	if (m_pTexture)
 	{
-		const auto& pos = m_Owner->GetTransform().GetPosition();
-		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y);
+		const glm::vec3 pos = m_Owner->GetWorldPosition();
+		const glm::vec2 size = m_pTexture->GetSize();
+		Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y, size.x * m_scale, size.y * m_scale);
 	}
 }
 

@@ -12,6 +12,7 @@
 #include "TextComponent.h"
 #include "RenderComponent.h"
 #include "FPSComponent.h"
+#include "RotatorComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -47,6 +48,33 @@ static void load()
 	fpsText->SetColor({ 255, 255, 255, 255 });
 	go->AddComponent<dae::FPSComponent>();
 	scene.Add(std::move(go));
+
+
+	auto pivot = std::make_unique<dae::GameObject>();
+	pivot->SetLocalPostion(glm::vec3(512.f, 300.f, 0.f));
+
+	auto parentChar = std::make_unique<dae::GameObject>();
+	auto* qbert = parentChar->AddComponent<dae::RenderComponent>("qbert.png");
+	qbert->SetScale(0.1f);
+	// Radius 80 px, one full revolution every ~3 seconds counter-clockwise
+	parentChar->AddComponent<dae::RotatorComponent>(10.f, 4.0f);
+	parentChar->SetParent(pivot.get(), false);
+
+	// Child character (another sprite, orbits its parent)
+	auto childChar = std::make_unique<dae::GameObject>();
+	auto* qbert_knight = childChar->AddComponent<dae::RenderComponent>("qbert knight.png");
+	qbert_knight->SetScale(0.1f);
+	// Radius 40 px, clockwise (negative speed) – opposite direction
+	childChar->AddComponent<dae::RotatorComponent>(40.f, -3.0f);
+
+	// Attach child BEFORE moving to scene so raw pointer stays valid.
+	// keepWorldPosition = false: child starts at local (0,0) → on top of parent.
+	childChar->SetParent(parentChar.get(), false);
+
+	// The Scene owns both objects; order matters only for iteration.
+	scene.Add(std::move(pivot));
+	scene.Add(std::move(parentChar));
+	scene.Add(std::move(childChar));
 
 }
 
