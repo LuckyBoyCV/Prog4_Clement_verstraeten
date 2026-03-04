@@ -17,7 +17,7 @@ dae::RenderComponent::RenderComponent(GameObject* pOwner, const std::string& fil
 }
 
 
-void dae::RenderComponent::Render() const
+void dae::RenderComponent::Render() 
 {
 	if (m_pTexture)
 	{

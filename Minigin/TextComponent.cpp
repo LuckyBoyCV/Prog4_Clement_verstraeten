@@ -26,7 +26,7 @@ void dae::TextComponent::Update(float )
 	}
 }
 
-void dae::TextComponent::Render() const
+void dae::TextComponent::Render() 
 {
 	m_renderComponent.Render();
 }

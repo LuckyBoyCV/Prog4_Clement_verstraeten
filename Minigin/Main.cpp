@@ -13,6 +13,7 @@
 #include "RenderComponent.h"
 #include "FPSComponent.h"
 #include "RotatorComponent.h"
+#include "ThrashCacheComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -66,10 +67,16 @@ static void load()
 	childChar->AddComponent<dae::RotatorComponent>(40.f, -3.0f);
 	childChar->SetParent(parentChar.get(), false);
 
-	
+
+	//cache
+	auto cache = std::make_unique<dae::GameObject>();
+	cache->AddComponent<dae::ThrashCacheComponent>();
+
+	// Add to scene
 	scene.Add(std::move(pivot));
 	scene.Add(std::move(parentChar));
 	scene.Add(std::move(childChar));
+	scene.Add(std::move(cache));
 
 }
 

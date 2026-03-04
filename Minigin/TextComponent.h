@@ -19,7 +19,7 @@ public:
 	~TextComponent() override = default;
 
 	void Update(float deltatime) override;	
-	void Render() const override;
+	void Render() override;
 
 	void SetText(const std::string& text);
 	void SetColor(SDL_Color color);	

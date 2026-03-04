@@ -14,7 +14,7 @@ namespace dae
 		RenderComponent(GameObject* owner, const std::string& filename);
 		~RenderComponent() override = default;
 
-		void Render() const override;
+		void Render()  override;
 
 		void SetTexture(const std::string& filename);
 		void SetTexture(std::shared_ptr<Texture2D> texture);

@@ -12,7 +12,7 @@ namespace dae
 		virtual ~Component() = default;
 
 		virtual void Update(float) {};
-		virtual void Render() const {}
+		virtual void Render()  {}
 
 		Component(const Component&) = delete;
 		Component(Component&&) = delete;
