@@ -5,7 +5,7 @@ using namespace dae;
 
 void Scene::Add(std::unique_ptr<GameObject> object)
 {
-	assert(object != nullptr && "Cannot add a null GameObject to the scene.");
+	assert(object != nullptr);
 	m_objects.emplace_back(std::move(object));
 }
 
@@ -28,11 +28,10 @@ void Scene::RemoveAll()
 
 void Scene::Update(float deltatime)
 {
-	for(auto& object : m_objects)
-	{
-		object->Update( deltatime);
-	}
+	for (auto& object : m_objects)
+		object->Update(deltatime);
 
+	// clean up anything flagged for deletion this frame
 	m_objects.erase(
 		std::remove_if(m_objects.begin(), m_objects.end(),
 			[](const std::unique_ptr<GameObject>& obj) { return obj->IsMarkedForDeletion(); }),
@@ -43,8 +42,5 @@ void Scene::Update(float deltatime)
 void Scene::Render() const
 {
 	for (const auto& object : m_objects)
-	{
 		object->Render();
-	}
 }
-

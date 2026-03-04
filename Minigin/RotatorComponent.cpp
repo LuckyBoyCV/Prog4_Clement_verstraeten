@@ -15,4 +15,5 @@ void dae::RotatorComponent::Update(float deltaTime)
 	const float x = m_radius * cos(m_angle);
 	const float y = m_radius * sin(m_angle);
 	m_Owner->SetPosition(x, y);
+	
 }

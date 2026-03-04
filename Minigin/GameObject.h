@@ -3,8 +3,8 @@
 #include <memory>
 #include <algorithm>
 #include <type_traits>
-#include "Transform.h"
 #include "Component.h"
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -61,8 +61,7 @@ namespace dae
 				m_components.end());
 		}
 
-		Transform& GetTransform() { return m_transform; }
-		const Transform& GetTransform() const { return m_transform; }
+	
 		void SetPosition(float x, float y) { SetLocalPostion(glm::vec3(x, y, 0.f)); }
 
 		GameObject() = default;
@@ -81,7 +80,7 @@ namespace dae
 
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child);
-		Transform m_transform{};
+		
 		std::vector<std::unique_ptr<Component>> m_components;
 		bool m_markedForDeletion{ false };
 
