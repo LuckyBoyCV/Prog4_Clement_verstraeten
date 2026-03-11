@@ -30,6 +30,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/FPSComponent.cpp
   Minigin/RotatorComponent.cpp
   Minigin/ThrashCacheComponent.cpp
+  Minigin/Controller.cpp
 )
 
 # enable c++20 features
