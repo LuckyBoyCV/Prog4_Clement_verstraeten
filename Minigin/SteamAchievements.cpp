@@ -1,3 +1,4 @@
+#ifdef USE_STEAMWORKS
 #include "SteamAchievements.h"
 CSteamAchievements::CSteamAchievements(Achievement_t* Achievements, int NumAchievements) :
     m_iAppID(0),
@@ -64,3 +65,5 @@ void CSteamAchievements::OnAchievementStored(UserAchievementStored_t* pCallback)
 		OutputDebugString("Stored Achievement for Steam\n");
 	}
 }
+
+#endif 
