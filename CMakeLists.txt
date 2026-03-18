@@ -32,6 +32,13 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/ThrashCacheComponent.cpp
   Minigin/Controller.cpp
   Minigin/MoveCommand.cpp
+  Minigin/Subject.cpp
+  Minigin/PlayerComponent.cpp
+  Minigin/LivesDisplayComponent.cpp
+  Minigin/ScoreDisplayComponent.cpp
+  Minigin/DamageCommand.cpp
+  Minigin/ScoreCommand.cpp
+  Minigin/SteamAchievements.cpp
 )
 
 # enable c++20 features

@@ -1,4 +1,10 @@
-﻿#include <stdexcept>
+﻿#if USE_STEAMWORKS
+#pragma warning(push)
+#pragma warning(disable:4996)
+#include <steam_api.h>
+#pragma warning(pop)
+#endif
+#include <stdexcept>
 #include <sstream>
 #include <iostream>
 
@@ -56,6 +62,11 @@ void PrintSDLVersion()
 
 dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 {
+	#if USE_STEAMWORKS
+		if (!SteamAPI_Init())
+			throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
+	#endif
+
 	PrintSDLVersion();
 	
 	if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
@@ -81,6 +92,9 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
 
 dae::Minigin::~Minigin()
 {
+	#if USE_STEAMWORKS
+		SteamAPI_Shutdown();
+	#endif
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
@@ -100,6 +114,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 void dae::Minigin::RunOneFrame()
 {
+	#if USE_STEAMWORKS
+		SteamAPI_RunCallbacks();
+	#endif
 	const auto Current = Clock::now();
 
 	float Delta_Time = std::chrono::duration<float>(Current - m_LastTime).count();
@@ -110,7 +127,7 @@ void dae::Minigin::RunOneFrame()
 		Delta_Time = Max_Delta;
 	}
 
-	m_quit = !InputManager::GetInstance().ProcessInput();
+	m_quit = !InputManager::GetInstance().ProcessInput(Delta_Time);
 	SceneManager::GetInstance().Update(Delta_Time);
 	Renderer::GetInstance().Render();
 

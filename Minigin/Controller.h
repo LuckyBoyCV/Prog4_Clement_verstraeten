@@ -2,7 +2,7 @@
 #include <memory>
 
 namespace dae {
-	class Controller
+	class Controller final
 	{
 		public:
 			enum class button : unsigned int

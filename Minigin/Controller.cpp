@@ -1,9 +1,10 @@
 #include "Controller.h"
+#if _WIN32
 #define WIN32_Lean_AND_MEAN
 #include "Windows.h"
 #include "Xinput.h"
 #pragma comment(lib,"xinput.lib")
-
+#endif
 namespace dae
 {
 	class Controller::ControllerImpl

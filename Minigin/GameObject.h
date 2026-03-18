@@ -88,6 +88,6 @@ namespace dae
 		std::vector<GameObject*> m_children;
 		glm::vec3 m_localPosition{};
 		glm::vec3 m_worldPosition{};
-		bool      m_positionIsDirty{ true };
+		bool m_positionIsDirty{ true };
 	};
 }

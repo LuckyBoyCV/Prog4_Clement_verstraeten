@@ -18,7 +18,7 @@ namespace dae
 	class InputManager final : public Singleton<InputManager>
 	{
 	public:
-		bool ProcessInput();
+		bool ProcessInput(float deltaTime);
 
 		void BindKeyboardCommand(SDL_Scancode key, KeyState state, std::unique_ptr<Command> command);
 		void UnbindKeyboardCommand(SDL_Scancode key, KeyState state);

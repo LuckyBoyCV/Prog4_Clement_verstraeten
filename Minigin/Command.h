@@ -9,6 +9,10 @@ namespace dae
 	public:
 		virtual ~Command() = default;
 		virtual void Execute() = 0;
+		void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
+
+	protected:
+		float m_deltaTime{ 0.f };
 	};
 
 
@@ -20,7 +24,7 @@ namespace dae
 	private:
 		GameObject* m_pOwner;
 
-		protected:
-			GameObject* GetOwner() const { return m_pOwner; }
+	protected:
+		GameObject* GetOwner() const { return m_pOwner; }
 	};
 }

@@ -3,7 +3,7 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <algorithm>
 
-bool dae::InputManager::ProcessInput()
+bool dae::InputManager::ProcessInput(float deltaTime)
 {
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
@@ -34,7 +34,10 @@ bool dae::InputManager::ProcessInput()
 			shouldExecute = IsKeyPressed(binding.key);
 
 		if (shouldExecute)
+		{
+			binding.command->SetDeltaTime(deltaTime);
 			binding.command->Execute();
+		}
 	}
 
 	for (const auto& binding : m_controllerBindings)
@@ -54,7 +57,10 @@ bool dae::InputManager::ProcessInput()
 			shouldExecute = pController->IsPressed(binding.button);
 
 		if (shouldExecute)
+		{
+			binding.command->SetDeltaTime(deltaTime);
 			binding.command->Execute();
+		}
 	}
 
 	for (int i = 0; i < SDL_SCANCODE_COUNT; ++i)
