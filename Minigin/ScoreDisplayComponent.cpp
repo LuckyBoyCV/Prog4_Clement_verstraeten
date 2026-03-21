@@ -9,8 +9,10 @@ dae::ScoreDisplayComponent::ScoreDisplayComponent(GameObject* owner)
 {
 }
 
-void dae::ScoreDisplayComponent::OnNotify(dae::GameObject* pOwner)
+void dae::ScoreDisplayComponent::OnNotify(GameEvent event, GameObject* pOwner)
 {
+    if (event != GameEvent::PlayerPickedUp) return;
+
     auto* player = pOwner->GetComponent<PlayerComponent>();
     if (!player) return;
 

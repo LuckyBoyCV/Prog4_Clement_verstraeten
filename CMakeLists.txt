@@ -38,12 +38,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/ScoreDisplayComponent.cpp
   Minigin/DamageCommand.cpp
   Minigin/ScoreCommand.cpp
- 
+ Minigin/AchievementComponent.cpp
 )
 
-if(WIN32)
-  target_sources(${TARGET_NAME} PRIVATE Minigin/SteamAchievements.cpp)
-endif()
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)

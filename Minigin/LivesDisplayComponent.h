@@ -15,6 +15,6 @@ namespace dae
         LivesDisplayComponent& operator=(const LivesDisplayComponent&) = delete;
         LivesDisplayComponent& operator=(LivesDisplayComponent&&) = delete;
 
-        void OnNotify(GameObject* pOwner) override;
+        void OnNotify(GameEvent event, GameObject* pOwner) override;
     };
 }

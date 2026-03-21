@@ -11,11 +11,11 @@ void dae::PlayerComponent::LoseLife()
 {
     if (m_Lives > 0)
         --m_Lives;
-    m_onDied.Notify(m_Owner);
+    m_subject.Notify(GameEvent::PlayerDied, m_Owner);
 }
 
 void dae::PlayerComponent::AddScore(int score)
 {
     m_Score += score;
-    m_onPointsGained.Notify(m_Owner);
+    m_subject.Notify(GameEvent::PlayerPickedUp, m_Owner);
 }

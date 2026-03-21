@@ -9,8 +9,9 @@ dae::LivesDisplayComponent::LivesDisplayComponent(GameObject* owner)
 {
 }
 
-void dae::LivesDisplayComponent::OnNotify(dae::GameObject* pOwner)
+void dae::LivesDisplayComponent::OnNotify(GameEvent event, GameObject* pOwner)
 {
+    if (event != GameEvent::PlayerDied) return;
     auto* player = pOwner->GetComponent<PlayerComponent>();
     if (!player) return;
 

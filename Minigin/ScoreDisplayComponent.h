@@ -15,6 +15,6 @@ namespace dae
         ScoreDisplayComponent& operator=(const ScoreDisplayComponent&) = delete;
         ScoreDisplayComponent& operator=(ScoreDisplayComponent&&) = delete;
 
-        void OnNotify(GameObject* pOwner) override;
+        void OnNotify(GameEvent event, GameObject* pOwner) override;
     };
 }

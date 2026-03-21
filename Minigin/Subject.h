@@ -1,4 +1,5 @@
 #pragma once
+#include "Event.h"
 #include <vector>
 namespace dae
 {
@@ -17,7 +18,7 @@ class GameObject;
 
 		void AddObserver(Observer* observer);
 		void RemoveObserver(Observer* observer);
-		void Notify(GameObject* pOwner);
+		void Notify(GameEvent event, GameObject* pOwner);
 
 
 	private:

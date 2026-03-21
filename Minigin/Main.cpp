@@ -20,6 +20,7 @@
 #include "DamageCommand.h"
 #include "ScoreCommand.h"
 #include "Controller.h"
+#include "AchievementComponent.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -33,38 +34,38 @@ static void load()
 	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
 
 	// background and logo
-	auto go = std::make_unique<dae::GameObject>();
-	go->AddComponent<dae::RenderComponent>("background.png");
-	scene.Add(std::move(go));
+	auto Go = std::make_unique<dae::GameObject>();
+	Go->AddComponent<dae::RenderComponent>("background.png");
+	scene.Add(std::move(Go));
 
-	go = std::make_unique<dae::GameObject>();
-	go->SetPosition(358, 180);
-	go->AddComponent<dae::RenderComponent>("logo.png");
-	scene.Add(std::move(go));
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(358, 180);
+	Go->AddComponent<dae::RenderComponent>("logo.png");
+	scene.Add(std::move(Go));
 
 	// title
-	go = std::make_unique<dae::GameObject>();
-	go->SetPosition(292, 15);
-	go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font)->SetColor({ 255, 255, 255, 255 });
-	scene.Add(std::move(go));
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(292, 15);
+	Go->AddComponent<dae::TextComponent>("Programming 4 Assignment", font)->SetColor({ 255, 255, 255, 255 });
+	scene.Add(std::move(Go));
 
 	// fps counter
-	go = std::make_unique<dae::GameObject>();
-	go->SetPosition(5, 5);
-	go->AddComponent<dae::TextComponent>("0.0 FPS", font)->SetColor({ 255, 255, 0, 255 });
-	go->AddComponent<dae::FPSComponent>();
-	scene.Add(std::move(go));
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(5, 5);
+	Go->AddComponent<dae::TextComponent>("0.0 FPS", font)->SetColor({ 255, 255, 0, 255 });
+	Go->AddComponent<dae::FPSComponent>();
+	scene.Add(std::move(Go));
 
 	//text
-	go = std::make_unique<dae::GameObject>();
-	go->SetPosition(5, 50);
-	go->AddComponent<dae::TextComponent>("Use the D-Pad to move Qbert, X to inflict damage, A and B to pick up pellets", smallFont)->SetColor({ 255, 200, 0, 255 });
-	scene.Add(std::move(go));
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(5, 50);
+	Go->AddComponent<dae::TextComponent>("Use the D-Pad to move Qbert, X to inflict damage, A and B to pick up pellets", smallFont)->SetColor({ 255, 200, 0, 255 });
+	scene.Add(std::move(Go));
 
-	go = std::make_unique<dae::GameObject>();
-	go->SetPosition(5, 70);
-	go->AddComponent<dae::TextComponent>("Use WASD to move Qbert Knight, C to inflict damage, Z and X to pick up pellets", smallFont)->SetColor({ 200, 100, 255, 255 });
-	scene.Add(std::move(go));
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(5, 70);
+	Go->AddComponent<dae::TextComponent>("Use WASD to move Qbert Knight, C to inflict damage, Z and X to pick up pellets", smallFont)->SetColor({ 200, 100, 255, 255 });
+	scene.Add(std::move(Go));
 
 
 	// player 1
@@ -77,13 +78,14 @@ static void load()
 	livesGo1->SetPosition(5, 95);
 	livesGo1->AddComponent<dae::TextComponent>("# lives: 3", smallFont)->SetColor({ 255, 255, 255, 255 });
 	auto* livesDisplay1 = livesGo1->AddComponent<dae::LivesDisplayComponent>();
-	pPlayer1->m_onDied.AddObserver(livesDisplay1);
+	pPlayer1->m_subject.AddObserver(livesDisplay1);
 
 	auto scoreGo1 = std::make_unique<dae::GameObject>();
 	scoreGo1->SetPosition(5, 115);
 	scoreGo1->AddComponent<dae::TextComponent>("Score: 0", smallFont)->SetColor({ 255, 255, 255, 255 });
 	auto* scoreDisplay1 = scoreGo1->AddComponent<dae::ScoreDisplayComponent>();
-	pPlayer1->m_onPointsGained.AddObserver(scoreDisplay1);
+	pPlayer1->m_subject.AddObserver(scoreDisplay1);
+	 
 
 	input.BindControllerCommand(0, dae::Controller::button::ButtonX, dae::KeyState::Down, std::make_unique<dae::DamageCommand>(player1.get()));
 	input.BindControllerCommand(0, dae::Controller::button::ButtonA, dae::KeyState::Down, std::make_unique<dae::ScoreCommand>(player1.get(), 100));
@@ -108,13 +110,13 @@ static void load()
 	livesGo2->SetPosition(5, 135);
 	livesGo2->AddComponent<dae::TextComponent>("# lives: 3", smallFont)->SetColor({ 255, 255, 255, 255 });
 	auto* livesDisplay2 = livesGo2->AddComponent<dae::LivesDisplayComponent>();
-	pPlayer2->m_onDied.AddObserver(livesDisplay2);
+	pPlayer2->m_subject.AddObserver(livesDisplay2);
 
 	auto scoreGo2 = std::make_unique<dae::GameObject>();
 	scoreGo2->SetPosition(5, 155);
 	scoreGo2->AddComponent<dae::TextComponent>("Score: 0", smallFont)->SetColor({ 255, 255, 255, 255 });
 	auto* scoreDisplay2 = scoreGo2->AddComponent<dae::ScoreDisplayComponent>();
-	pPlayer2->m_onPointsGained.AddObserver(scoreDisplay2);
+	pPlayer2->m_subject.AddObserver(scoreDisplay2);
 
 	input.BindKeyboardCommand(SDL_SCANCODE_W, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(player2.get(), glm::vec3{ 0, -1, 0 }, 50.f));
 	input.BindKeyboardCommand(SDL_SCANCODE_S, dae::KeyState::Pressed, std::make_unique<dae::MoveCommand>(player2.get(), glm::vec3{ 0,  1, 0 }, 50.f));
@@ -127,6 +129,14 @@ static void load()
 	scene.Add(std::move(player2));
 	scene.Add(std::move(livesGo2));
 	scene.Add(std::move(scoreGo2));
+
+
+	//achievement
+	auto achievementGo = std::make_unique<dae::GameObject>();
+	auto* achievement = achievementGo->AddComponent<dae::AchievementComponent>();
+	pPlayer1->m_subject.AddObserver(achievement);
+	pPlayer2->m_subject.AddObserver(achievement);
+	scene.Add(std::move(achievementGo));
 }
 
 int main(int, char* []) {

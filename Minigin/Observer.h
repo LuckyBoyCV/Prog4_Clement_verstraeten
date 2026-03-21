@@ -1,4 +1,5 @@
 #pragma once
+#include "Event.h"
 namespace dae
 {
 
@@ -14,6 +15,6 @@ namespace dae
         Observer(Observer&&) = delete;
         Observer& operator=(const Observer&) = delete;
         Observer& operator=(Observer&&) = delete;
-        virtual void OnNotify(GameObject* pOwner) = 0;
+        virtual void OnNotify(GameEvent event, GameObject* pOwner) = 0;
     };
 }

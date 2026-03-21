@@ -21,8 +21,7 @@ namespace dae
         int GetLives() const { return m_Lives; }
         int GetScore() const { return m_Score; }
 
-        Subject m_onDied;
-        Subject m_onPointsGained;
+        Subject m_subject;
 
     private:
         int m_Lives{ 3 };
