@@ -21,14 +21,23 @@
 #include "ScoreCommand.h"
 #include "Controller.h"
 #include "AchievementComponent.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
+#include "SoundCommand.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
 
 static void load()
 {
+	auto ss = std::make_unique<dae::SDLSoundSystem>();
+	dae::sound_id jumpSound = ss->RegisterSound("Data/jump.wav");
+	dae::ServiceLocator::RegisterSoundSystem(std::move(ss));
+
+
 	auto& scene = dae::SceneManager::GetInstance().CreateScene();
 	auto& input = dae::InputManager::GetInstance();
+	
 
 	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
@@ -67,6 +76,11 @@ static void load()
 	Go->AddComponent<dae::TextComponent>("Use WASD to move Qbert Knight, C to inflict damage, Z and X to pick up pellets", smallFont)->SetColor({ 200, 100, 255, 255 });
 	scene.Add(std::move(Go));
 
+	Go = std::make_unique<dae::GameObject>();
+	Go->SetPosition(5, 250);
+	Go->AddComponent<dae::TextComponent>("press spacebar to make jump sound", smallFont)->SetColor({ 255, 255, 255, 255 });
+	scene.Add(std::move(Go));
+
 
 	// player 1
 	auto player1 = std::make_unique<dae::GameObject>();
@@ -86,6 +100,8 @@ static void load()
 	auto* scoreDisplay1 = scoreGo1->AddComponent<dae::ScoreDisplayComponent>();
 	pPlayer1->m_subject.AddObserver(scoreDisplay1);
 	 
+
+	input.BindKeyboardCommand(SDL_SCANCODE_SPACE, dae::KeyState::Down, std::make_unique<dae::SoundCommand>(jumpSound, 1.0f));
 
 	input.BindControllerCommand(0, dae::Controller::button::ButtonX, dae::KeyState::Down, std::make_unique<dae::DamageCommand>(player1.get()));
 	input.BindControllerCommand(0, dae::Controller::button::ButtonA, dae::KeyState::Down, std::make_unique<dae::ScoreCommand>(player1.get(), 100));

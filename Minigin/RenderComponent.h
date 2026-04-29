@@ -3,6 +3,7 @@
 #include "Component.h"
 #include <string>
 #include "Texture2D.h"
+#include <SDL3/SDL.h>
 
 namespace dae
 {
@@ -19,9 +20,12 @@ namespace dae
 		void SetTexture(const std::string& filename);
 		void SetTexture(std::shared_ptr<Texture2D> texture);
 		void SetScale(float scale) { m_scale = scale; }
+		void SetSourceRect(int x, int y, int width, int height);
 
 	private:
 		std::shared_ptr<Texture2D> m_pTexture{};
-		float m_scale{ 1.0f };	
+		float m_scale{ 1.0f };
+		SDL_FRect m_sourceRect{};
+		bool m_hasSrcRect{ false };
 	};
 }
