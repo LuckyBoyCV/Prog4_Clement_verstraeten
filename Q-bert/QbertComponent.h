@@ -19,19 +19,19 @@ namespace qbert
 		QbertComponent& operator=(const QbertComponent&) = delete;
 		QbertComponent& operator=(QbertComponent&&) = delete;
 
-		//void Update(float deltaTime) override;
-		//bool Move(int destRow, int destCol);
+		void Update(float deltaTime) override;
+		bool Move(int destRow, int destCol);
 		bool isJumping() const { return m_isJumping; }
-		//void loseLife();
+		void loseLife();
 		int getLives() const { return m_Lives; }
 
 		int getRow() const { return m_row; }
 		int getCol() const { return m_col; }
 
-		//dae::Subject m_subject;
+		dae::Subject m_subject;
 
 	private:
-		//void Respawn();
+		void Respawn();
 
 		PyramidComponent* m_pPyramid;
 		int m_Lives;

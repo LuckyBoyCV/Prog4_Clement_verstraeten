@@ -99,7 +99,7 @@ void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 		stateOffset = 0; 
 		break;
 	case TileState::visited:     
-		stateOffset = 32; 
+		tile.spriteY = 192; 
 		break;
 	case TileState::visitedTwice: 
 		stateOffset = 64; 
@@ -115,7 +115,7 @@ void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 glm::vec2 qbert::PyramidComponent::GetTileScreenPos(int row, int col) const
 {
 	float x = StartX + (col - row * 0.5f) * TileW;
-	float y = StartY + row * TileH;
+	float y = StartY + row * (TileH - 20.f);
 	return { x,y };
 };
 

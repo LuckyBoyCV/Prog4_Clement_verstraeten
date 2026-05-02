@@ -46,6 +46,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   #qbert
   Q-bert/PyramidComponent.cpp
   Q-bert/QbertComponent.cpp
+  Q-bert/JumpCommand.cpp
 )
 
 

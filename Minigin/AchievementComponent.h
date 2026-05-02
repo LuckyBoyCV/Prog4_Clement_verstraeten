@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "Observer.h"
 #include "Subject.h"
-#include "Event.h"
+#include "../Q-bert/GameEvent.h"
 
 namespace dae
 {

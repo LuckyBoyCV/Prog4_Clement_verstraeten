@@ -24,7 +24,9 @@
 #include "ServiceLocator.h"
 #include "SDLSoundSystem.h"
 #include "SoundCommand.h"
-
+#include "../Q-bert/PyramidComponent.h"
+#include "../Q-bert/QbertComponent.h"
+#include "../Q-bert/JumpCommand.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -44,13 +46,13 @@ static void load()
 
 	// background and logo
 	auto Go = std::make_unique<dae::GameObject>();
-	Go->AddComponent<dae::RenderComponent>("background.png");
-	scene.Add(std::move(Go));
+	//Go->AddComponent<dae::RenderComponent>("background.png");
+	//scene.Add(std::move(Go));
 
-	Go = std::make_unique<dae::GameObject>();
-	Go->SetPosition(358, 180);
-	Go->AddComponent<dae::RenderComponent>("logo.png");
-	scene.Add(std::move(Go));
+	//Go = std::make_unique<dae::GameObject>();
+	//Go->SetPosition(358, 180);
+	//Go->AddComponent<dae::RenderComponent>("logo.png");
+	//scene.Add(std::move(Go));
 
 	// title
 	Go = std::make_unique<dae::GameObject>();
@@ -153,6 +155,24 @@ static void load()
 	pPlayer1->m_subject.AddObserver(achievement);
 	pPlayer2->m_subject.AddObserver(achievement);
 	scene.Add(std::move(achievementGo));
+
+	//Pyramid
+	auto pyramidGo = std::make_unique<dae::GameObject>();
+	auto* pyramid = pyramidGo->AddComponent<qbert::PyramidComponent>();
+	scene.Add(std::move(pyramidGo));
+
+	auto qbertGo = std::make_unique<dae::GameObject>();
+	auto* render = qbertGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
+	render->SetSourceRect(64, 0, 16, 22);  
+	render->SetScale(3.f);
+	qbertGo->AddComponent<qbert::QbertComponent>(pyramid, 0, 0);
+
+	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, 0));
+	input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1, +1));
+	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1, 0));
+	input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
+	
+	scene.Add(std::move(qbertGo));
 }
 
 int main(int, char* []) {

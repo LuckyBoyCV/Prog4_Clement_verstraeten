@@ -33,10 +33,10 @@ namespace qbert
 		void SetTileType(Tile& tile, TileType type);
 
 		static constexpr int   Rows = 7;
-		static constexpr float TileW = 64.f;
-		static constexpr float TileH = 32.f;
-		static constexpr float StartX = 512.f;
-		static constexpr float StartY = 80.f;
+		static constexpr float TileW = 90.f;
+		static constexpr float TileH = 60.f;
+		static constexpr float StartX = 450.f;
+		static constexpr float StartY = 144.f;
 
 	private:
 		Tile m_Tiles[Rows][Rows];
