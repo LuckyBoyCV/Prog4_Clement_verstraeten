@@ -24,6 +24,8 @@ void qbert::QbertComponent::Update(float deltaTime)
 	if(m_isFalling)
 	{
 		m_respawnTimer += deltaTime;
+		float t = m_respawnTimer / m_respawnDuration;
+		m_Owner->SetPosition(m_fallStartPos.x, m_fallStartPos.y + t * 600.f);
 		if (m_respawnTimer >= m_respawnDuration)
 		{
 			m_isFalling = false;
@@ -59,6 +61,7 @@ void qbert::QbertComponent::Update(float deltaTime)
 		if (!m_pPyramid->GetTile(m_futureRow, m_futureCol))
 		{
 			m_isFalling = true;
+			m_fallStartPos = { endPos.x + 30.f, endPos.y - 30.f };
 			loseLife();
 			return;
 		}
@@ -100,7 +103,7 @@ void qbert::QbertComponent::Respawn()
 	m_row = 0;
 	m_col = 0;
 	auto* tile = m_pPyramid->GetTile(0, 0);
-	m_Owner->SetPosition(tile->position.x, tile->position.y);
+	m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y - 30.f);
 }
 
 

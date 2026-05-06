@@ -92,22 +92,22 @@ bool qbert::PyramidComponent::IsStepped() const
 
 void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 {
-	int stateOffset = 0;
+	int stateOffset = 32;
 	switch (tile.state)
 	{
 	case TileState::empty:       
 		stateOffset = 0; 
 		break;
 	case TileState::visited:     
-		tile.spriteY = 192; 
+		stateOffset = 32; 
 		break;
 	case TileState::visitedTwice: 
 		stateOffset = 64; 
 		break;
 	}
 
-	tile.spriteX = stateOffset;
-	tile.spriteY = 160;
+	tile.spriteX = 0;
+	tile.spriteY = 160+stateOffset;
 	tile.spriteW = 32;
 	tile.spriteH = 32;
 }

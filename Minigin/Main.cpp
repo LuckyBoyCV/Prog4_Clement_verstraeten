@@ -27,6 +27,7 @@
 #include "../Q-bert/PyramidComponent.h"
 #include "../Q-bert/QbertComponent.h"
 #include "../Q-bert/JumpCommand.h"
+#include "../Q-bert/CoilyComponent.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -166,6 +167,11 @@ static void load()
 	render->SetSourceRect(64, 0, 16, 22);  
 	render->SetScale(3.f);
 	qbertGo->AddComponent<qbert::QbertComponent>(pyramid, 0, 0);
+	auto* qbert = qbertGo->GetComponent<qbert::QbertComponent>();
+
+	auto coilyGo = std::make_unique<dae::GameObject>();
+	coilyGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png")->SetScale(2.f);
+	coilyGo->AddComponent<qbert::CoilyComponent>(pyramid, qbert);
 
 	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, 0));
 	input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1, +1));
@@ -173,6 +179,7 @@ static void load()
 	input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
 	
 	scene.Add(std::move(qbertGo));
+	scene.Add(std::move(coilyGo));
 }
 
 int main(int, char* []) {

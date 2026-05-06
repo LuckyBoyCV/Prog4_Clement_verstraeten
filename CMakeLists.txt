@@ -47,6 +47,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/PyramidComponent.cpp
   Q-bert/QbertComponent.cpp
   Q-bert/JumpCommand.cpp
+  Q-bert/CoilyComponent.cpp
+  Q-bert/CoilyEggState.cpp
+  Q-bert/CoilySnakeState.cpp
 )
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Subject.h"
+#include <glm/vec2.hpp>
 
 namespace qbert
 {
@@ -46,6 +47,7 @@ namespace qbert
 		bool m_isFalling{ false };
 		float m_respawnTimer{ 0.f };
 		float m_respawnDuration{ 2.f };
+		glm::vec2 m_fallStartPos{};
 
 
 
