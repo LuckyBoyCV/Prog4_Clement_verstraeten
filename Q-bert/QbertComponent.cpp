@@ -100,10 +100,10 @@ void qbert::QbertComponent::loseLife()
 
 void qbert::QbertComponent::Respawn()
 {
+
 	m_row = 0;
 	m_col = 0;
-	auto* tile = m_pPyramid->GetTile(0, 0);
-	m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y - 30.f);
+	m_Owner->SetPosition(m_pPyramid->GetTileScreenPos(m_row, m_col).x + 30.f, m_pPyramid->GetTileScreenPos(m_row, m_col).y - 30.f);
 }
 
 

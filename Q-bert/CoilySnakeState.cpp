@@ -8,35 +8,41 @@ qbert::CoilyState* qbert::CoilySnakeState::Update(CoilyComponent& coily, float d
 		return nullptr;
 	}
 
-	m_JumpTime += deltaTime;
+    m_JumpTime += deltaTime;
+    if (m_JumpTime < m_JumpInterval)
+        return nullptr;
 
-	int rowDiff = coily.getQbertRow() - coily.getRow();
-	int colDiff = coily.getQbertCol() - coily.getCol();
+    m_JumpTime = 0.f;
 
-	int rowStep;
-	if (rowDiff > 0)
-		rowStep = 1;
-	else if (rowDiff < 0) 
-		rowStep = -1;
-	else                  
-		rowStep = 0;
+    int row = coily.getRow();
+    int col = coily.getCol();
+    int qRow = coily.getQbertRow();
+    int qCol = coily.getQbertCol();
 
-	int colStep;
-	if (colDiff > 0) 
-		colStep = 1;
-	else if (colDiff < 0) 
-		colStep = -1;
-	else                  
-		colStep = 0;
+    int destRow;
+    int destCol;
 
-	if (rowStep == 1 && colStep != 0 && colStep != 1)  colStep = 0;
-	if (rowStep == -1 && colStep != 0 && colStep != -1) colStep = 0;
-
-	coily.Move(rowStep, colStep);
+    if (qRow > row)
+    {
+        destRow = row + 1;
+        if (qCol > col)
+            destCol = col + 1;
+        else
+            destCol = col;
+    }
+    else
+    {
+        destRow = row - 1;
+        if (qCol >= col)
+            destCol = col;
+        else
+            destCol = col - 1;
+    }
+	coily.Move(destRow, destCol);
 	return nullptr;
 }
 
 void qbert::CoilySnakeState::onEnter(CoilyComponent& coily)
 {
-	coily.SetSprite(0, 48, 16, 32);
+	coily.SetSprite(80, 32, 16, 32);
 }

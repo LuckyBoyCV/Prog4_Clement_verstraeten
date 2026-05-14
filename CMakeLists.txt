@@ -50,6 +50,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/CoilyComponent.cpp
   Q-bert/CoilyEggState.cpp
   Q-bert/CoilySnakeState.cpp
+  Q-bert/RedBallComponent.cpp
 )
 
 

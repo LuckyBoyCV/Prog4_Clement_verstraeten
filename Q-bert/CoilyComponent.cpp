@@ -91,7 +91,9 @@ void qbert::CoilyComponent::SetState(CoilyState* newState)
 {
 	if (m_pState)
 		m_pState->onExit(*this);
-	m_pState.reset(newState);
+	m_pState.reset(std::move(newState));
+	
 	if (m_pState)
 		m_pState->onEnter(*this);
+	
 }
