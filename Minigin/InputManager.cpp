@@ -123,6 +123,12 @@ void dae::InputManager::UnbindControllerCommand(int controllerIndex, Controller:
 		m_controllerBindings.end());
 }
 
+void dae::InputManager::ClearAllBindings()
+{
+	m_keyboardBindings.clear();
+	m_controllerBindings.clear();
+}
+
 dae::Controller* dae::InputManager::GetController(int index)
 {
 	while (static_cast<int>(m_controllers.size()) <= index)

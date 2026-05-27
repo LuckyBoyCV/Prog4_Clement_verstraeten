@@ -3,18 +3,14 @@
 
 void dae::SceneManager::Update(float deltatime)
 {
-	for(auto& scene : m_scenes)
-	{
-		scene->Update( deltatime);
-	}
+	if (m_activeSceneIndex < m_scenes.size())
+		m_scenes[m_activeSceneIndex]->Update(deltatime);
 }
 
 void dae::SceneManager::Render()
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
+	if (m_activeSceneIndex < m_scenes.size())
+		m_scenes[m_activeSceneIndex]->Render();
 }
 
 dae::Scene& dae::SceneManager::CreateScene()

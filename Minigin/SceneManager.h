@@ -15,9 +15,14 @@ namespace dae
 
 		void Update(float deltatime);
 		void Render();
+
+		void SetActiveScene(int index) { m_activeSceneIndex = index; }
+		int GetActiveScene() const { return m_activeSceneIndex; }
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
+		int m_activeSceneIndex{ 0 };
 	};
 }

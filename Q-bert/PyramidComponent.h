@@ -28,6 +28,7 @@ namespace qbert
 		void  StepOn(Tile& tile);
 		bool  IsStepped() const;
 		void UpdateTileSprite(Tile& tile);
+		void ReverseStep(Tile& tile);
 
 		glm::vec2 GetTileScreenPos(int row, int col) const;
 		void SetTileType(Tile& tile, TileType type);

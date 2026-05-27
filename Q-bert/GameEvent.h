@@ -6,6 +6,8 @@ namespace dae {
         PlayerPickedUp,
         EnemyDied,
         PlayerFell,
-        GameOver
+        GameOver,
+        roundChanged,
+        levelChanged
     };
 }

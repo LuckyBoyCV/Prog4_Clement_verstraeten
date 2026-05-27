@@ -23,7 +23,9 @@ namespace qbert
 		void Update(float deltaTime) override;
 		bool Move(int destRow, int destCol);
 		bool isJumping() const { return m_isJumping; }
+		bool isFalling() const { return m_isFalling; }
 		void loseLife();
+		void kill();
 		int getLives() const { return m_Lives; }
 
 		int getRow() const { return m_row; }
@@ -38,6 +40,8 @@ namespace qbert
 		int m_Lives;
 		int m_row;
 		int m_col;
+		int m_startRow{ 0 };
+		int m_startCol{ 0 };
 		bool m_isJumping{ false };
 		float m_jumpTime{ 0.f };
 		float m_jumpDuration{ 0.2f };

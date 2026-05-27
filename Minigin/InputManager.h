@@ -26,6 +26,8 @@ namespace dae
 		void BindControllerCommand(int controllerIndex, Controller::button button, KeyState state, std::unique_ptr<Command> command);
 		void UnbindControllerCommand(int controllerIndex, Controller::button button, KeyState state);
 
+		void ClearAllBindings();
+
 	private:
 		bool IsKeyDown(SDL_Scancode key) const;
 		bool IsKeyUp(SDL_Scancode key) const;

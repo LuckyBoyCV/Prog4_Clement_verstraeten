@@ -10,7 +10,9 @@ qbert::QbertComponent::QbertComponent(dae::GameObject* pOwner, PyramidComponent*
 	m_pPyramid(pyramid),
 	m_Lives(3),
 	m_row(startRow),
-	m_col(startCol)
+	m_col(startCol),
+	m_startRow(startRow),
+	m_startCol(startCol)
 {
 	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
 	{
@@ -98,12 +100,21 @@ void qbert::QbertComponent::loseLife()
 		m_subject.Notify(dae::GameEvent::PlayerDied, m_Owner);
 }
 
+void qbert::QbertComponent::kill()
+{
+	if (m_isFalling || m_isJumping) return;
+	m_isFalling = true;
+	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	m_fallStartPos = { pos.x + 30.f, pos.y - 30.f };
+	loseLife();
+}
+
 void qbert::QbertComponent::Respawn()
 {
-
-	m_row = 0;
-	m_col = 0;
-	m_Owner->SetPosition(m_pPyramid->GetTileScreenPos(m_row, m_col).x + 30.f, m_pPyramid->GetTileScreenPos(m_row, m_col).y - 30.f);
+	m_row = m_startRow;
+	m_col = m_startCol;
+	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	m_Owner->SetPosition(pos.x + 30.f, pos.y - 30.f);
 }
 
 

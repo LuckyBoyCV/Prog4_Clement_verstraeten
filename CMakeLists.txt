@@ -30,7 +30,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/RenderComponent.cpp
   Minigin/FPSComponent.cpp
   Minigin/RotatorComponent.cpp
-  Minigin/ThrashCacheComponent.cpp
+  
   Minigin/Controller.cpp
   Minigin/MoveCommand.cpp
   Minigin/Subject.cpp
@@ -51,6 +51,13 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/CoilyEggState.cpp
   Q-bert/CoilySnakeState.cpp
   Q-bert/RedBallComponent.cpp
+  Q-bert/GameStateComponent.cpp
+  Q-bert/RoundDisplayComponent.cpp
+  Q-bert/LevelDisplayComponent.cpp
+  Q-bert/SlickSamComponent.cpp
+  Q-bert/CoilyPlayerState.cpp
+  Q-bert/CoilyJumpCommand.cpp
+  Q-bert/mainMenuComponent.cpp
 )
 
 

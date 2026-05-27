@@ -1,9 +1,10 @@
 #include "CoilySnakeState.h"
 #include "CoilyComponent.h"
 
-qbert::CoilyState* qbert::CoilySnakeState::Update(CoilyComponent& coily, float deltaTime)
+
+std::unique_ptr<qbert::CoilyState> qbert::CoilySnakeState::Update(CoilyComponent& coily, float deltaTime)
 {
-	if (coily.isJumping())
+		if (coily.isJumping())
 	{
 		return nullptr;
 	}
@@ -39,10 +40,12 @@ qbert::CoilyState* qbert::CoilySnakeState::Update(CoilyComponent& coily, float d
             destCol = col - 1;
     }
 	coily.Move(destRow, destCol);
-	return nullptr;
+    return nullptr;
 }
 
 void qbert::CoilySnakeState::onEnter(CoilyComponent& coily)
 {
-	coily.SetSprite(80, 32, 16, 32);
+	coily.setSprite(80, 32, 16, 32);
+	coily.spriteOffset(-40.f);
+	coily.setIsSnake(true);
 }

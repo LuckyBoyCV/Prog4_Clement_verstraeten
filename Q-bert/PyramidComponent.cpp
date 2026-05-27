@@ -112,6 +112,16 @@ void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 	tile.spriteH = 32;
 }
 
+void qbert::PyramidComponent::ReverseStep(Tile& tile)
+{
+	if (tile.state == TileState::visited)
+		tile.state = TileState::empty;
+	else if (tile.state == TileState::visitedTwice)
+		tile.state = TileState::visited;
+	
+	UpdateTileSprite(tile);
+}
+
 glm::vec2 qbert::PyramidComponent::GetTileScreenPos(int row, int col) const
 {
 	float x = StartX + (col - row * 0.5f) * TileW;

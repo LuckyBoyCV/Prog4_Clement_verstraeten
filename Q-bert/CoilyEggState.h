@@ -8,7 +8,7 @@ namespace qbert
 	class CoilyEggState final : public CoilyState
 	{
 	public:
-		CoilyState* Update(CoilyComponent& coily, float deltaTime) override;
+		std::unique_ptr<CoilyState> Update(CoilyComponent& coily, float deltaTime) override;
 		void onEnter(CoilyComponent& coily) override;
 
 

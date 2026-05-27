@@ -1,14 +1,17 @@
-#include "RedBallComponent.h"
+#include "SlickSamComponent.h"
 #include "PyramidComponent.h"
-#include "QbertComponent.h"
 #include "GameObject.h"
+#include "QbertComponent.h"
 #include "GameEvent.h"
 #include <cstdlib>
 
-qbert::redBallComponent::redBallComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert)
+
+qbert::SlickSamComponent::SlickSamComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert)
+
 	: Component(pOwner)
 	, m_pPyramid(pyramid)
 	, m_pQbert(qbert)
+
 {
 	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
 	{
@@ -17,27 +20,24 @@ qbert::redBallComponent::redBallComponent(dae::GameObject* pOwner, PyramidCompon
 	Respawn();
 }
 
-void qbert::redBallComponent::Update(float deltaTime)
+void qbert::SlickSamComponent::Update(float deltaTime)
 {
 	if (m_waitingToRespawn)
 	{
-		m_respawnTime += deltaTime;
-		if (m_respawnTime >= m_respawnDelay)
+		m_respawnTimer += deltaTime;
+		if (m_respawnTimer >= m_respawnDelay)
 		{
 			m_waitingToRespawn = false;
-			m_respawnTime = 0.f;
+			m_respawnTimer = 0.f;
 			m_row = m_respawnRow;
 			m_col = m_respawnCol;
-			m_isJumping = false;
-			m_jumpTime = 0.f;
-			setSprite(17, 16, 16, 16);
 			glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
 			m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
 		}
 		return;
 	}
 
-	if(m_isJumping)
+	if (m_isJumping)
 	{
 		m_jumpTime += deltaTime;
 		float t = std::min(m_jumpTime / m_jumpDuration, 1.f);
@@ -62,13 +62,20 @@ void qbert::redBallComponent::Update(float deltaTime)
 	bool qbertJustLanded = m_qbertWasJumping && !m_pQbert->isJumping();
 	m_qbertWasJumping = m_pQbert->isJumping();
 	if (qbertJustLanded && m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
-		m_pQbert->kill();
-
-	m_jumpTime += deltaTime;
-	if(m_jumpTime < m_jumpInterval)
 	{
+		m_subject.Notify(dae::GameEvent::EnemyDied, m_Owner);
+		m_waitingToRespawn = true;
+		m_respawnTimer = 0.f;
+		m_respawnDelay = m_respawnDuration;
+		m_respawnRow = 0;
+		m_respawnCol = 0;
+		m_Owner->SetPosition(-1000.f, -1000.f);
 		return;
 	}
+
+	m_jumpTime += deltaTime;
+	if (m_jumpTime < m_jumpInterval)
+		return;
 
 	m_jumpTime = 0.f;
 
@@ -76,15 +83,12 @@ void qbert::redBallComponent::Update(float deltaTime)
 	int destCol = m_col + (std::rand() % 2);
 
 	if (!Move(destRow, destCol))
-	{
-		
 		Respawn();
-	}
 }
 
-bool qbert::redBallComponent::Move(int destRow, int destCol)
+bool qbert::SlickSamComponent::Move(int destRow, int destCol)
 {
-	if(m_isJumping)
+	if (m_isJumping)
 		return false;
 
 	if (m_pPyramid->GetTile(destRow, destCol) == nullptr)
@@ -95,15 +99,25 @@ bool qbert::redBallComponent::Move(int destRow, int destCol)
 	return true;
 }
 
-void qbert::redBallComponent::setSprite(int x, int y, int w, int h)
+
+void qbert::SlickSamComponent::onTile()
 {
-	if (auto* render = m_Owner->GetComponent<dae::RenderComponent>())
+	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
+		m_pPyramid->ReverseStep(*tile);
+
+	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 	{
-		render->SetSourceRect(x, y, w, h);
+		m_subject.Notify(dae::GameEvent::EnemyDied, m_Owner);
+		m_waitingToRespawn = true;
+		m_respawnTimer = 0.f;
+		m_respawnDelay = m_respawnDuration;
+		m_respawnRow = 0;
+		m_respawnCol = 0;
+		m_Owner->SetPosition(-1000.f, -1000.f);
 	}
 }
 
-void qbert::redBallComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
+void qbert::SlickSamComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 {
 	if (event != dae::GameEvent::PlayerDied) return;
 
@@ -113,22 +127,15 @@ void qbert::redBallComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 	m_respawnRow = rows[idx];
 	m_respawnCol = cols[idx];
 	m_respawnDelay = 1.0f + (rand() % 9) * 0.5f;
-	m_respawnTime = 0.f;
+	m_respawnTimer = 0.f;
 	m_isJumping = false;
 	m_waitingToRespawn = true;
 	m_Owner->SetPosition(-1000.f, -1000.f);
 }
 
-void qbert::redBallComponent::onTile()
-{
-	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
-		m_pQbert->kill();
-}
-
-void qbert::redBallComponent::Respawn()
+void qbert::SlickSamComponent::Respawn()
 {
 	m_row = 0;
 	m_col = 0;
-	setSprite(17, 16, 16, 16);
 	m_Owner->SetPosition(m_pPyramid->GetTileScreenPos(m_row, m_col).x + m_spriteOffsetX, m_pPyramid->GetTileScreenPos(m_row, m_col).y - m_spriteOffsetY);
 }
