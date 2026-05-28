@@ -22,6 +22,7 @@ void qbert::mainMenuComponent::Update(float)
 
 	if (upDown && !m_upWasDown)
 	{
+		// + size before mod so we don't go negative
 		m_selectedIndex = (m_selectedIndex - 1 + static_cast<int>(m_items.size())) % static_cast<int>(m_items.size());
 		updateColors();
 	}
@@ -52,6 +53,7 @@ void qbert::mainMenuComponent::updateColors()
 {
 	for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
 	{
+		// Selected item is orange, everything else is grey
 		if (i == m_selectedIndex)
 			m_items[i]->SetColor({ 255, 165, 0, 255 });
 		else

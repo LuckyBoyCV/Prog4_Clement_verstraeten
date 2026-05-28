@@ -24,9 +24,10 @@ namespace qbert
 		void updateColors();
 
 		std::vector<dae::TextComponent*> m_items;
-		std::function<void(gameMode)> m_onSelect;
+		std::function<void(gameMode)> m_onSelect; // called with the chosen mode on confirm
 		int m_selectedIndex{ 0 };
 
+		// Edge-detection: only react on the frame the key goes down
 		bool m_upWasDown{ false };
 		bool m_downWasDown{ false };
 		bool m_enterWasDown{ false };

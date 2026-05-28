@@ -46,15 +46,26 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   #qbert
   Q-bert/PyramidComponent.cpp
   Q-bert/QbertComponent.cpp
+  Q-bert/QbertIdleState.cpp
+  Q-bert/QbertJumpingState.cpp
+  Q-bert/QbertFallingState.cpp
   Q-bert/JumpCommand.cpp
   Q-bert/CoilyComponent.cpp
   Q-bert/CoilyEggState.cpp
   Q-bert/CoilySnakeState.cpp
+  Q-bert/CoilyJumpingState.cpp
+  Q-bert/CoilyRespawningState.cpp
   Q-bert/RedBallComponent.cpp
+  Q-bert/RedBallMovingState.cpp
+  Q-bert/RedBallJumpingState.cpp
+  Q-bert/RedBallRespawningState.cpp
   Q-bert/GameStateComponent.cpp
   Q-bert/RoundDisplayComponent.cpp
   Q-bert/LevelDisplayComponent.cpp
   Q-bert/SlickSamComponent.cpp
+  Q-bert/SlickSamMovingState.cpp
+  Q-bert/SlickSamJumpingState.cpp
+  Q-bert/SlickSamRespawningState.cpp
   Q-bert/CoilyPlayerState.cpp
   Q-bert/CoilyJumpCommand.cpp
   Q-bert/mainMenuComponent.cpp

@@ -17,7 +17,7 @@ namespace qbert
 		GameStateComponent& operator=(GameStateComponent&&) = delete;
 
 		void advanceRound();
-		void advanceLevel();
+		void advanceLevel(); // also resets round back to 1
 
 		int getRound() const { return m_round; }
 		int getLevel() const { return m_level; }

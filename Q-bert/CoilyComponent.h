@@ -14,7 +14,6 @@ namespace qbert
 	class CoilyComponent final : public dae::Component, public dae::Observer
 	{
 	public:
-
 		explicit CoilyComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert);
 		~CoilyComponent() override = default;
 		CoilyComponent(const CoilyComponent&) = delete;
@@ -22,16 +21,19 @@ namespace qbert
 		CoilyComponent& operator=(const CoilyComponent&) = delete;
 		CoilyComponent& operator=(CoilyComponent&&) = delete;
 
-
 		void Update(float deltaTime) override;
+		// Called by CoilyJumpCommand in versus mode
 		bool Move(int destRow, int destCol);
-		bool isJumping() const { return m_isJumping; }
+		bool isJumping() const;
+
 		void setSprite(int x, int y, int w, int h);
 		void spriteOffset(float offset) { m_spriteOffsetY = offset; }
 		void setIsSnake(bool isSnake) { m_isSnake = isSnake; }
 
 		int getRow() const { return m_row; }
 		int getCol() const { return m_col; }
+		void setRow(int r) { m_row = r; }
+		void setCol(int c) { m_col = c; }
 
 		int getQbertRow() const;
 		int getQbertCol() const;
@@ -40,36 +42,36 @@ namespace qbert
 		bool isPlayerControlled() const { return m_playerControlled; }
 		bool getIsSnake() const { return m_isSnake; }
 
+		PyramidComponent* getPyramid()      const { return m_pPyramid; }
+		dae::GameObject*  getOwner()        const { return m_Owner; }
+		float             getSpriteOffsetY() const { return m_spriteOffsetY; }
+
+		void onTile();
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
 
 	private:
+		void SetState(std::unique_ptr<CoilyState> newState);
+		void SnapToCurrentTile();
+
 		PyramidComponent* m_pPyramid;
-		QbertComponent* m_pQbert;
+		QbertComponent*   m_pQbert;
 		int   m_row{ 0 };
 		int   m_col{ 0 };
-		bool  m_isJumping{ false };
-		float m_jumpTime{ 0.f };
-		float JumpDuration{ 0.2f };
-		int   m_futureRow{ 0 };
-		int   m_futureCol{ 0 };
 		std::unique_ptr<CoilyState> m_pState;
 		float m_spriteOffsetY{ -30.f };
 		bool  m_isSnake{ false };
 		bool  m_playerControlled{ false };
 		bool  m_qbertWasJumping{ false };
-		bool  m_waitingToRespawn{ false };
-		float m_respawnTimer{ 0.f };
+
+		// Set by OnNotify; flushed at the start of the next Update to avoid mid-frame state changes
+		bool  m_pendingRespawn{ false };
 		float m_respawnDelay{ 0.f };
 		int   m_respawnRow{ 0 };
 		int   m_respawnCol{ 0 };
 
-		void SetState(std::unique_ptr<CoilyState> newState);
-		void SnapToCurrentTile();
-		void onTile();
+		// Set by Move() from CoilyJumpCommand; flushed the same way
+		bool m_pendingJump{ false };
+		int  m_pendingJumpRow{ 0 };
+		int  m_pendingJumpCol{ 0 };
 	};
-
-
-
-
-
 }

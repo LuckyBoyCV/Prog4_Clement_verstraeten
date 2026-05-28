@@ -10,8 +10,8 @@ namespace qbert
 	public:
 		virtual ~CoilyState() = default;
 		virtual std::unique_ptr<CoilyState> Update(CoilyComponent& coily, float deltaTime) = 0;
-		virtual void onEnter(CoilyComponent& ) {}
-		virtual void onExit(CoilyComponent& ) {}
-	
+		virtual void onEnter(CoilyComponent&) {}
+		virtual void onExit(CoilyComponent&) {}
+		virtual bool isJumping() const { return false; }
 	};
 }

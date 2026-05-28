@@ -1,13 +1,12 @@
 #pragma once
 #include "Component.h"
 #include "Subject.h"
+#include "QbertState.h"
 #include <glm/vec2.hpp>
+#include <memory>
 
 namespace qbert
 {
-
-
-
 	class PyramidComponent;
 
 	class QbertComponent final : public dae::Component
@@ -21,20 +20,34 @@ namespace qbert
 		QbertComponent& operator=(QbertComponent&&) = delete;
 
 		void Update(float deltaTime) override;
-		bool Move(int destRow, int destCol);
-		bool isJumping() const { return m_isJumping; }
-		bool isFalling() const { return m_isFalling; }
+		// Initiates a jump by delta (called by JumpCommand)
+		bool Move(int deltaRow, int deltaCol);
+
 		void loseLife();
 		void kill();
-		int getLives() const { return m_Lives; }
+		void Respawn();
 
-		int getRow() const { return m_row; }
-		int getCol() const { return m_col; }
+		bool isJumping() const;
+		bool isFalling() const;
+
+		int getRow()       const { return m_row; }
+		int getCol()       const { return m_col; }
+		int getFutureRow() const { return m_futureRow; }
+		int getFutureCol() const { return m_futureCol; }
+		int getLives()     const { return m_Lives; }
+
+		void setRow(int r) { m_row = r; }
+		void setCol(int c) { m_col = c; }
+
+		PyramidComponent*  getPyramid()      const { return m_pPyramid; }
+		dae::GameObject*   getOwner()        const { return m_Owner; }
+		float              getJumpDuration() const { return m_jumpDuration; }
+		float              getRespawnDuration() const { return m_respawnDuration; }
 
 		dae::Subject m_subject;
 
 	private:
-		void Respawn();
+		void SetState(std::unique_ptr<QbertState> newState);
 
 		PyramidComponent* m_pPyramid;
 		int m_Lives;
@@ -42,18 +55,12 @@ namespace qbert
 		int m_col;
 		int m_startRow{ 0 };
 		int m_startCol{ 0 };
-		bool m_isJumping{ false };
-		float m_jumpTime{ 0.f };
-		float m_jumpDuration{ 0.2f };
 		int m_futureRow{ 0 };
 		int m_futureCol{ 0 };
 
-		bool m_isFalling{ false };
-		float m_respawnTimer{ 0.f };
-		float m_respawnDuration{ 2.f };
-		glm::vec2 m_fallStartPos{};
+		static constexpr float m_jumpDuration{ 0.2f };
+		static constexpr float m_respawnDuration{ 2.f };
 
-
-
+		std::unique_ptr<QbertState> m_pState;
 	};
 }

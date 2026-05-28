@@ -1,106 +1,50 @@
 #include "SlickSamComponent.h"
+#include "SlickSamMovingState.h"
+#include "SlickSamRespawningState.h"
 #include "PyramidComponent.h"
 #include "GameObject.h"
 #include "QbertComponent.h"
 #include "GameEvent.h"
 #include <cstdlib>
 
-
 qbert::SlickSamComponent::SlickSamComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert)
-
 	: Component(pOwner)
 	, m_pPyramid(pyramid)
 	, m_pQbert(qbert)
-
 {
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
-	{
-		m_Owner->SetPosition(tile->position.x + m_spriteOffsetX, tile->position.y - m_spriteOffsetY);
-	}
-	Respawn();
+	// Start at top of pyramid
+	m_row = 0;
+	m_col = 0;
+	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
+
+	m_pState = std::make_unique<SlickSamMovingState>();
 }
 
 void qbert::SlickSamComponent::Update(float deltaTime)
 {
-	if (m_waitingToRespawn)
+	// OnNotify sets m_pendingRespawn to avoid destroying the state mid-Update
+	if (m_pendingRespawn)
 	{
-		m_respawnTimer += deltaTime;
-		if (m_respawnTimer >= m_respawnDelay)
-		{
-			m_waitingToRespawn = false;
-			m_respawnTimer = 0.f;
-			m_row = m_respawnRow;
-			m_col = m_respawnCol;
-			glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
-			m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
-		}
+		m_pendingRespawn = false;
+		SetState(std::make_unique<SlickSamRespawningState>(m_respawnDelay, m_respawnRow, m_respawnCol));
 		return;
 	}
 
-	if (m_isJumping)
+	if (m_pState)
 	{
-		m_jumpTime += deltaTime;
-		float t = std::min(m_jumpTime / m_jumpDuration, 1.f);
-		glm::vec2 startPos = m_pPyramid->GetTileScreenPos(m_row, m_col);
-		glm::vec2 endPos = m_pPyramid->GetTileScreenPos(m_futureRow, m_futureCol);
-		float arc = -4.f * t * (t - 1.f);
-		m_Owner->SetPosition(
-			startPos.x + (endPos.x - startPos.x) * t + m_spriteOffsetX,
-			startPos.y + (endPos.y - startPos.y) * t - arc * 30.f - 15.f
-		);
-		if (t >= 1.f)
-		{
-			m_isJumping = false;
-			m_row = m_futureRow;
-			m_col = m_futureCol;
-			m_Owner->SetPosition(endPos.x + m_spriteOffsetX, endPos.y - m_spriteOffsetY);
-			onTile();
-		}
-		return;
+		auto next = m_pState->Update(*this, deltaTime);
+		if (next)
+			SetState(std::move(next));
 	}
-
-	bool qbertJustLanded = m_qbertWasJumping && !m_pQbert->isJumping();
-	m_qbertWasJumping = m_pQbert->isJumping();
-	if (qbertJustLanded && m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
-	{
-		m_subject.Notify(dae::GameEvent::EnemyDied, m_Owner);
-		m_waitingToRespawn = true;
-		m_respawnTimer = 0.f;
-		m_respawnDelay = m_respawnDuration;
-		m_respawnRow = 0;
-		m_respawnCol = 0;
-		m_Owner->SetPosition(-1000.f, -1000.f);
-		return;
-	}
-
-	m_jumpTime += deltaTime;
-	if (m_jumpTime < m_jumpInterval)
-		return;
-
-	m_jumpTime = 0.f;
-
-	int destRow = m_row + 1;
-	int destCol = m_col + (std::rand() % 2);
-
-	if (!Move(destRow, destCol))
-		Respawn();
 }
 
-bool qbert::SlickSamComponent::Move(int destRow, int destCol)
+bool qbert::SlickSamComponent::isJumping() const
 {
-	if (m_isJumping)
-		return false;
-
-	if (m_pPyramid->GetTile(destRow, destCol) == nullptr)
-		return false;
-	m_futureRow = destRow;
-	m_futureCol = destCol;
-	m_isJumping = true;
-	return true;
+	return m_pState && m_pState->isJumping();
 }
 
-
-void qbert::SlickSamComponent::onTile()
+bool qbert::SlickSamComponent::onTile()
 {
 	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
 		m_pPyramid->ReverseStep(*tile);
@@ -108,13 +52,10 @@ void qbert::SlickSamComponent::onTile()
 	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 	{
 		m_subject.Notify(dae::GameEvent::EnemyDied, m_Owner);
-		m_waitingToRespawn = true;
-		m_respawnTimer = 0.f;
-		m_respawnDelay = m_respawnDuration;
-		m_respawnRow = 0;
-		m_respawnCol = 0;
 		m_Owner->SetPosition(-1000.f, -1000.f);
+		return true; // caller should transition to respawn
 	}
+	return false;
 }
 
 void qbert::SlickSamComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
@@ -124,18 +65,20 @@ void qbert::SlickSamComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 	static const int rows[] = { 0, 1, 1 };
 	static const int cols[] = { 0, 0, 1 };
 	int idx = rand() % 3;
-	m_respawnRow = rows[idx];
-	m_respawnCol = cols[idx];
+	m_respawnRow   = rows[idx];
+	m_respawnCol   = cols[idx];
 	m_respawnDelay = 1.0f + (rand() % 9) * 0.5f;
-	m_respawnTimer = 0.f;
-	m_isJumping = false;
-	m_waitingToRespawn = true;
+
+	// Hide immediately; state transition applied at start of next Update
 	m_Owner->SetPosition(-1000.f, -1000.f);
+	m_pendingRespawn = true;
 }
 
-void qbert::SlickSamComponent::Respawn()
+void qbert::SlickSamComponent::SetState(std::unique_ptr<SlickSamState> newState)
 {
-	m_row = 0;
-	m_col = 0;
-	m_Owner->SetPosition(m_pPyramid->GetTileScreenPos(m_row, m_col).x + m_spriteOffsetX, m_pPyramid->GetTileScreenPos(m_row, m_col).y - m_spriteOffsetY);
+	if (m_pState)
+		m_pState->onExit(*this);
+	m_pState = std::move(newState);
+	if (m_pState)
+		m_pState->onEnter(*this);
 }
