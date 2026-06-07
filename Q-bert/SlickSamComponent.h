@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Observer.h"
+#include "Enemy.h"
 #include "Subject.h"
 #include "SlickSamState.h"
 #include <memory>
@@ -10,7 +11,7 @@ namespace qbert
 	class PyramidComponent;
 	class QbertComponent;
 
-	class SlickSamComponent final : public dae::Component, public dae::Observer
+	class SlickSamComponent final : public dae::Component, public dae::Observer, public Enemy
 	{
 	public:
 		explicit SlickSamComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert);
@@ -21,6 +22,12 @@ namespace qbert
 		SlickSamComponent& operator=(SlickSamComponent&&) = delete;
 
 		void Update(float deltaTime) override;
+
+		// Enemy activation contract
+		void activate() override;
+		void deactivate() override;
+		bool isActive() const override { return m_active; }
+
 		bool isJumping() const;
 
 		// Called by JumpingState after landing; reverses the tile and returns true if Q-bert was on it
@@ -68,6 +75,7 @@ namespace qbert
 		float m_respawnDelay{ 0.f };
 		int   m_respawnRow{ 0 };
 		int   m_respawnCol{ 0 };
+		bool  m_active{ false };
 
 		std::unique_ptr<SlickSamState> m_pState;
 	};

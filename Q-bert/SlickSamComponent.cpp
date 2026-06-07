@@ -12,17 +12,36 @@ qbert::SlickSamComponent::SlickSamComponent(dae::GameObject* pOwner, PyramidComp
 	, m_pPyramid(pyramid)
 	, m_pQbert(qbert)
 {
+	// Starts inactive; the enemySpawnerComponent activates Slick/Sam from round 2.
+	deactivate();
+}
+
+void qbert::SlickSamComponent::activate()
+{
 	// Start at top of pyramid
 	m_row = 0;
 	m_col = 0;
+	m_futureRow = 0;
+	m_futureCol = 0;
+	m_pendingRespawn = false;
 	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
 
 	m_pState = std::make_unique<SlickSamMovingState>();
+	m_active = true;
+}
+
+void qbert::SlickSamComponent::deactivate()
+{
+	m_active = false;
+	m_Owner->SetPosition(-1000.f, -1000.f);
 }
 
 void qbert::SlickSamComponent::Update(float deltaTime)
 {
+	if (!m_active)
+		return;
+
 	// OnNotify sets m_pendingRespawn to avoid destroying the state mid-Update
 	if (m_pendingRespawn)
 	{
@@ -61,6 +80,7 @@ bool qbert::SlickSamComponent::onTile()
 void qbert::SlickSamComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 {
 	if (event != dae::GameEvent::PlayerDied) return;
+	if (!m_active) return;
 
 	static const int rows[] = { 0, 1, 1 };
 	static const int cols[] = { 0, 0, 1 };

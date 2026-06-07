@@ -12,18 +12,35 @@ qbert::redBallComponent::redBallComponent(dae::GameObject* pOwner, PyramidCompon
 	, m_pPyramid(pyramid)
 	, m_pQbert(qbert)
 {
+	// Starts inactive; the enemySpawnerComponent activates the red ball from round 3.
+	deactivate();
+}
+
+void qbert::redBallComponent::activate()
+{
 	// Start at top of pyramid
 	m_row = 0;
 	m_col = 0;
+	m_pendingRespawn = false;
 	setSprite(17, 16, 16, 16);
 	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
 
 	m_pState = std::make_unique<RedBallMovingState>();
+	m_active = true;
+}
+
+void qbert::redBallComponent::deactivate()
+{
+	m_active = false;
+	m_Owner->SetPosition(-1000.f, -1000.f);
 }
 
 void qbert::redBallComponent::Update(float deltaTime)
 {
+	if (!m_active)
+		return;
+
 	// OnNotify sets m_pendingRespawn to avoid destroying the state mid-Update
 	if (m_pendingRespawn)
 	{
@@ -54,6 +71,7 @@ void qbert::redBallComponent::setSprite(int x, int y, int w, int h)
 void qbert::redBallComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 {
 	if (event != dae::GameEvent::PlayerDied) return;
+	if (!m_active) return;
 
 	static const int rows[] = { 0, 1, 1 };
 	static const int cols[] = { 0, 0, 1 };

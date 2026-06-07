@@ -15,16 +15,40 @@ qbert::CoilyComponent::CoilyComponent(dae::GameObject* pOwner, PyramidComponent*
 	, m_pPyramid(pyramid)
 	, m_pQbert(qbert)
 {
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
-		m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y + m_spriteOffsetY);
+	// Starts inactive; the enemySpawnerComponent activates Coily each round.
+	deactivate();
+}
+
+void qbert::CoilyComponent::activate()
+{
+	m_row = 0;
+	m_col = 0;
+	m_isSnake = false;
+	m_qbertWasJumping = false;
+	m_pendingRespawn = false;
+	m_pendingJump = false;
 
 	m_pState = std::make_unique<CoilyEggState>();
 	m_pState->onEnter(*this);
+
+	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
+		m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y + m_spriteOffsetY);
+
+	m_active = true;
+}
+
+void qbert::CoilyComponent::deactivate()
+{
+	m_active = false;
+	m_Owner->SetPosition(-1000.f, -1000.f);
 }
 
 void qbert::CoilyComponent::Update(float deltaTime)
 {
-	// avoids mid update state change 
+	if (!m_active)
+		return;
+
+	// avoids mid update state change
 	if (m_pendingRespawn)
 	{
 		m_pendingRespawn = false;
@@ -88,6 +112,7 @@ int qbert::CoilyComponent::getQbertCol() const
 void qbert::CoilyComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 {
 	if (event != dae::GameEvent::PlayerDied) return;
+	if (!m_active) return;
 
 	static const int rows[] = { 0, 1, 1 };
 	static const int cols[] = { 0, 0, 1 };

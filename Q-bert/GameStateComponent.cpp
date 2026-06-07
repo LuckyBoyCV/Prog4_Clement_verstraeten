@@ -1,10 +1,27 @@
 #include "GameStateComponent.h"
 #include "GameObject.h"
 #include "GameEvent.h"
+#include "PyramidComponent.h"
+#include "QbertComponent.h"
 
 qbert::GameStateComponent::GameStateComponent(dae::GameObject* pOwner)
 	: Component(pOwner)
 {
+}
+
+void qbert::GameStateComponent::Update(float)
+{
+	// Round is complete once every tile has been flipped. Advancing resets the
+	// pyramid (so IsStepped() is false again next frame, no double-trigger) and
+	// sends Q*bert back to the start. advanceRound() notifies roundChanged, which
+	// the enemySpawnerComponent uses to re-gate enemies for the new round.
+	if (m_pPyramid && m_pPyramid->IsStepped())
+	{
+		advanceRound();
+		m_pPyramid->Reset();
+		for (auto* qbert : m_qberts)
+			qbert->Respawn();
+	}
 }
 
 void qbert::GameStateComponent::advanceRound()

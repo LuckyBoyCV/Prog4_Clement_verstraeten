@@ -90,6 +90,19 @@ bool qbert::PyramidComponent::IsStepped() const
 	return true;
 }
 
+void qbert::PyramidComponent::Reset()
+{
+	for (int r = 0; r < Rows; ++r)
+	{
+		for (int c = 0; c <= r; ++c)
+		{
+			auto& tile = m_Tiles[r][c];
+			tile.state = TileState::empty;
+			UpdateTileSprite(tile);
+		}
+	}
+}
+
 void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 {
 	int stateOffset = 32;

@@ -27,6 +27,7 @@ namespace qbert
 		Tile* GetTile(int row, int col);
 		void  StepOn(Tile& tile);
 		bool  IsStepped() const;
+		void  Reset(); // clears every tile back to empty (used on round advance)
 		void UpdateTileSprite(Tile& tile);
 		void ReverseStep(Tile& tile);
 

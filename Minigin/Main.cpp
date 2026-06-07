@@ -22,8 +22,11 @@
 #include "../Q-bert/RoundDisplayComponent.h"
 #include "../Q-bert/SlickSamComponent.h"
 #include "../Q-bert/mainMenuComponent.h"
+#include "../Q-bert/MenuCommand.h"
 #include "../Q-bert/coilyJumpCommand.h"
 #include "../Q-bert/gameMode.h"
+#include "../Q-bert/Enemy.h"
+#include "../Q-bert/enemySpawnerComponent.h"
 
 #include <filesystem>
 #include <cstdlib>
@@ -46,12 +49,7 @@ static void loadMenu()
 	titleGo->AddComponent<dae::TextComponent>("Q*BERT", largeFont)->SetColor({ 255, 165, 0, 255 });
 	scene.Add(std::move(titleGo));
 
-	// Subtitle
-	auto subtitleGo = std::make_unique<dae::GameObject>();
-	subtitleGo->SetPosition(310.f, 160.f);
-	subtitleGo->AddComponent<dae::TextComponent>("Select a game mode:", smallFont)->SetColor({ 200, 200, 200, 255 });
-	scene.Add(std::move(subtitleGo));
-
+	
 	// Menu options
 	constexpr float menuX = 380.f;
 	std::vector<dae::TextComponent*> menuItems;
@@ -71,25 +69,20 @@ static void loadMenu()
 	menuItems.push_back(item3Go->AddComponent<dae::TextComponent>("Versus", menuFont));
 	scene.Add(std::move(item3Go));
 
-	// Controls 
-	auto hintGo = std::make_unique<dae::GameObject>();
-	hintGo->SetPosition(250.f, 460.f);
-	hintGo->AddComponent<dae::TextComponent>("Arrow keys to navigate   Enter to select", smallFont)->SetColor({ 130, 130, 130, 255 });
-	scene.Add(std::move(hintGo));
-
-	// Co-op text
-	auto coopDescGo = std::make_unique<dae::GameObject>();
-	coopDescGo->SetPosition(220.f, 490.f);
-	coopDescGo->AddComponent<dae::TextComponent>("Co-op: P1 arrows  P2 WASD  |  Versus: P1 arrows  P2 WASD (controls Coily)", smallFont)->SetColor({ 100, 100, 100, 255 });
-	scene.Add(std::move(coopDescGo));
-
+	
 	// Menu controller
 	auto menuGo = std::make_unique<dae::GameObject>();
-	menuGo->AddComponent<qbert::mainMenuComponent>(
+	auto* menuComp = menuGo->AddComponent<qbert::mainMenuComponent>(
 		menuItems,
 		[](qbert::gameMode mode) { loadGame(mode); }
 	);
 	scene.Add(std::move(menuGo));
+
+	auto& input = dae::InputManager::GetInstance();
+	input.ClearAllBindings();
+	input.BindKeyboardCommand(SDL_SCANCODE_UP,     dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_DOWN,   dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
+	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::KeyState::Down, std::make_unique<qbert::MenuConfirmCommand>(menuComp));
 }
 
 static void loadGame(qbert::gameMode mode)
@@ -213,11 +206,24 @@ static void loadGame(qbert::gameMode mode)
 	auto gameStateGo = std::make_unique<dae::GameObject>();
 	auto* gameState = gameStateGo->AddComponent<qbert::GameStateComponent>();
 
+	// Round progression: completing the pyramid advances the round and resets things
+	gameState->setPyramid(pyramid);
+	gameState->addQbert(qbert1);
+	gameState->addQbert(qbert2); 
+
+	// Enemy spawner: gates which enemies are active per round and enforces the cap
+	auto spawnerGo = std::make_unique<dae::GameObject>();
+	auto* spawner = spawnerGo->AddComponent<qbert::enemySpawnerComponent>(gameState, coily, redBall, slick, sam);
+	gameState->m_subject.AddObserver(spawner);
+	slick->m_subject.AddObserver(spawner); // EnemyDied frees the slot
+	sam->m_subject.AddObserver(spawner);
+	scene.Add(std::move(spawnerGo));
+
 	auto levelLabelGo = std::make_unique<dae::GameObject>();
 	levelLabelGo->SetPosition(840.f, 50.f);
 
 	auto levelNumberGo = std::make_unique<dae::GameObject>();
-	levelNumberGo->SetPosition(850.f, 65.f);
+	levelNumberGo->SetPosition(850.f, 50.f);
 	levelNumberGo->AddComponent<dae::TextComponent>(std::to_string(gameState->getLevel()), smallFont)->SetColor({ 255, 255, 255, 255 });
 
 	auto* levelDisplay = levelLabelGo->AddComponent<qbert::LevelDisplayComponent>(levelNumberGo.get());

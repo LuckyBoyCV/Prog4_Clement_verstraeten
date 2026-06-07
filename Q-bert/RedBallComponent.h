@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Observer.h"
+#include "Enemy.h"
 #include "RenderComponent.h"
 #include "RedBallState.h"
 #include <memory>
@@ -10,7 +11,7 @@ namespace qbert
 	class PyramidComponent;
 	class QbertComponent;
 
-	class redBallComponent final : public dae::Component, public dae::Observer
+	class redBallComponent final : public dae::Component, public dae::Observer, public Enemy
 	{
 	public:
 		explicit redBallComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert);
@@ -21,6 +22,12 @@ namespace qbert
 		redBallComponent& operator=(redBallComponent&&) = delete;
 
 		void Update(float deltaTime) override;
+
+		// Enemy activation contract
+		void activate() override;
+		void deactivate() override;
+		bool isActive() const override { return m_active; }
+
 		bool isJumping() const;
 		void setSprite(int x, int y, int w, int h);
 
@@ -65,6 +72,7 @@ namespace qbert
 		float m_respawnDelay{ 0.f };
 		int   m_respawnRow{ 0 };
 		int   m_respawnCol{ 0 };
+		bool  m_active{ false };
 
 		std::unique_ptr<RedBallState> m_pState;
 	};

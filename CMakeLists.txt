@@ -69,6 +69,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/CoilyPlayerState.cpp
   Q-bert/CoilyJumpCommand.cpp
   Q-bert/mainMenuComponent.cpp
+  Q-bert/enemySpawnerComponent.cpp
 )
 
 

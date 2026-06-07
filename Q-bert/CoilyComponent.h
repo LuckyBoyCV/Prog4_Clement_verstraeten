@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Observer.h"
+#include "Enemy.h"
 #include "RenderComponent.h"
 #include <memory>
 #include "CoilyState.h"
@@ -11,7 +12,7 @@ namespace qbert
 	class QbertComponent;
 	class CoilyState;
 
-	class CoilyComponent final : public dae::Component, public dae::Observer
+	class CoilyComponent final : public dae::Component, public dae::Observer, public Enemy
 	{
 	public:
 		explicit CoilyComponent(dae::GameObject* pOwner, PyramidComponent* pyramid, QbertComponent* qbert);
@@ -22,6 +23,12 @@ namespace qbert
 		CoilyComponent& operator=(CoilyComponent&&) = delete;
 
 		void Update(float deltaTime) override;
+
+		// Enemy activation contract
+		void activate() override;
+		void deactivate() override;
+		bool isActive() const override { return m_active; }
+
 		// Called by CoilyJumpCommand in versus mode
 		bool Move(int destRow, int destCol);
 		bool isJumping() const;
@@ -62,6 +69,7 @@ namespace qbert
 		bool  m_isSnake{ false };
 		bool  m_playerControlled{ false };
 		bool  m_qbertWasJumping{ false };
+		bool  m_active{ false };
 
 		// Set by OnNotify; flushed at the start of the next Update to avoid mid-frame state changes
 		bool  m_pendingRespawn{ false };

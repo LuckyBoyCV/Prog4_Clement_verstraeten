@@ -1,6 +1,5 @@
 #include "mainMenuComponent.h"
 #include "TextComponent.h"
-#include <SDL3/SDL.h>
 
 qbert::mainMenuComponent::mainMenuComponent(dae::GameObject* pOwner,
 	std::vector<dae::TextComponent*> items,
@@ -12,48 +11,35 @@ qbert::mainMenuComponent::mainMenuComponent(dae::GameObject* pOwner,
 	updateColors();
 }
 
-void qbert::mainMenuComponent::Update(float)
+void qbert::mainMenuComponent::SelectUp()
 {
-	const bool* keys = SDL_GetKeyboardState(nullptr);
+	m_selectedIndex = (m_selectedIndex - 1 + static_cast<int>(m_items.size())) % static_cast<int>(m_items.size());
+	updateColors();
+}
 
-	const bool upDown    = keys[SDL_SCANCODE_UP]     != 0;
-	const bool downDown  = keys[SDL_SCANCODE_DOWN]   != 0;
-	const bool enterDown = keys[SDL_SCANCODE_RETURN] != 0;
+void qbert::mainMenuComponent::SelectDown()
+{
+	m_selectedIndex = (m_selectedIndex + 1) % static_cast<int>(m_items.size());
+	updateColors();
+}
 
-	if (upDown && !m_upWasDown)
+void qbert::mainMenuComponent::Confirm()
+{
+	gameMode selectedMode;
+	switch (m_selectedIndex)
 	{
-		// + size before mod so we don't go negative
-		m_selectedIndex = (m_selectedIndex - 1 + static_cast<int>(m_items.size())) % static_cast<int>(m_items.size());
-		updateColors();
+		case 0: selectedMode = gameMode::singlePlayer; break;
+		case 1: selectedMode = gameMode::Coop;         break;
+		case 2: selectedMode = gameMode::Versus;       break;
+		default: return;
 	}
-	if (downDown && !m_downWasDown)
-	{
-		m_selectedIndex = (m_selectedIndex + 1) % static_cast<int>(m_items.size());
-		updateColors();
-	}
-	if (enterDown && !m_enterWasDown)
-	{
-		gameMode selectedMode;
-		switch (m_selectedIndex)
-		{
-			case 0: selectedMode = gameMode::singlePlayer; break;
-			case 1: selectedMode = gameMode::Coop; break;
-			case 2: selectedMode = gameMode::Versus; break;
-			default: return;
-		}
-		m_onSelect(selectedMode);
-	}
-
-	m_upWasDown    = upDown;
-	m_downWasDown  = downDown;
-	m_enterWasDown = enterDown;
+	m_onSelect(selectedMode);
 }
 
 void qbert::mainMenuComponent::updateColors()
 {
 	for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
 	{
-		// Selected item is orange, everything else is grey
 		if (i == m_selectedIndex)
 			m_items[i]->SetColor({ 255, 165, 0, 255 });
 		else
