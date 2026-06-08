@@ -3,6 +3,7 @@
 #include "GameEvent.h"
 #include "PyramidComponent.h"
 #include "QbertComponent.h"
+#include <cstdlib>
 
 qbert::GameStateComponent::GameStateComponent(dae::GameObject* pOwner)
 	: Component(pOwner)
@@ -18,6 +19,13 @@ void qbert::GameStateComponent::Update(float)
 	if (m_pPyramid && m_pPyramid->IsStepped())
 	{
 		advanceRound();
+
+		// New round -> new random target colour (always different from the current
+		// one). The pyramid tiles and the CHANGE TO swatch both follow the colour set.
+		const int count   = PyramidComponent::ColorSetCount;
+		const int current = m_pPyramid->getColorSet();
+		m_pPyramid->setColorSet((current + 1 + std::rand() % (count - 1)) % count);
+
 		m_pPyramid->Reset();
 		for (auto* qbert : m_qberts)
 			qbert->Respawn();

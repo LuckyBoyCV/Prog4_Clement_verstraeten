@@ -82,6 +82,12 @@ void qbert::QbertComponent::Respawn()
 	m_Owner->SetPosition(pos.x + 30.f, pos.y - 30.f);
 }
 
+void qbert::QbertComponent::addScore(int points)
+{
+	m_Score += points;
+	m_subject.Notify(dae::GameEvent::PlayerPickedUp, m_Owner);
+}
+
 void qbert::QbertComponent::SetState(std::unique_ptr<QbertState> newState)
 {
 	if (m_pState)

@@ -29,17 +29,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Minigin/TextComponent.cpp
   Minigin/RenderComponent.cpp
   Minigin/FPSComponent.cpp
-  Minigin/RotatorComponent.cpp
   
   Minigin/Controller.cpp
-  Minigin/MoveCommand.cpp
   Minigin/Subject.cpp
-  Minigin/PlayerComponent.cpp
-  Minigin/LivesDisplayComponent.cpp
-  Minigin/ScoreDisplayComponent.cpp
-  Minigin/DamageCommand.cpp
-  Minigin/ScoreCommand.cpp
-  Minigin/AchievementComponent.cpp
   Minigin/ServiceLocator.cpp
   Minigin/SDLSoundSystem.cpp
 
@@ -62,6 +54,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/GameStateComponent.cpp
   Q-bert/RoundDisplayComponent.cpp
   Q-bert/LevelDisplayComponent.cpp
+  Q-bert/LivesDisplayComponent.cpp
+  Q-bert/ScoreDisplayComponent.cpp
+  Q-bert/ChangeToComponent.cpp
   Q-bert/SlickSamComponent.cpp
   Q-bert/SlickSamMovingState.cpp
   Q-bert/SlickSamJumpingState.cpp

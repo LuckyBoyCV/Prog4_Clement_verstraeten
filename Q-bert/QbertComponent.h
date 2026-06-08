@@ -26,6 +26,7 @@ namespace qbert
 		void loseLife();
 		void kill();
 		void Respawn();
+		void addScore(int points);
 
 		bool isJumping() const;
 		bool isFalling() const;
@@ -35,6 +36,7 @@ namespace qbert
 		int getFutureRow() const { return m_futureRow; }
 		int getFutureCol() const { return m_futureCol; }
 		int getLives()     const { return m_Lives; }
+		int getScore()     const { return m_Score; }
 
 		void setRow(int r) { m_row = r; }
 		void setCol(int c) { m_col = c; }
@@ -51,6 +53,7 @@ namespace qbert
 
 		PyramidComponent* m_pPyramid;
 		int m_Lives;
+		int m_Score{ 0 };
 		int m_row;
 		int m_col;
 		int m_startRow{ 0 };

@@ -103,6 +103,14 @@ void qbert::PyramidComponent::Reset()
 	}
 }
 
+void qbert::PyramidComponent::setColorSet(int set)
+{
+	m_colorSet = set;
+	for (int r = 0; r < Rows; ++r)
+		for (int c = 0; c <= r; ++c)
+			UpdateTileSprite(m_Tiles[r][c]);
+}
+
 void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 {
 	int stateOffset = 32;
@@ -119,7 +127,7 @@ void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 		break;
 	}
 
-	tile.spriteX = 0;
+	tile.spriteX = m_colorSet * ColorSetStride;
 	tile.spriteY = 160+stateOffset;
 	tile.spriteW = 32;
 	tile.spriteH = 32;

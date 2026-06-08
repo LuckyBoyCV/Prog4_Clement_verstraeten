@@ -21,8 +21,9 @@ qbert::CoilyComponent::CoilyComponent(dae::GameObject* pOwner, PyramidComponent*
 
 void qbert::CoilyComponent::activate()
 {
-	m_row = 0;
-	m_col = 0;
+	// Enter at a random tile flanking the apex (grid 1 or grid 2), never the apex itself
+	m_row = 1;
+	m_col = rand() % 2;
 	m_isSnake = false;
 	m_qbertWasJumping = false;
 	m_pendingRespawn = false;
@@ -114,11 +115,9 @@ void qbert::CoilyComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 	if (event != dae::GameEvent::PlayerDied) return;
 	if (!m_active) return;
 
-	static const int rows[] = { 0, 1, 1 };
-	static const int cols[] = { 0, 0, 1 };
-	int idx = rand() % 3;
-	m_respawnRow   = rows[idx];
-	m_respawnCol   = cols[idx];
+	// Re-enter at a random tile flanking the apex (grid 1 or grid 2)
+	m_respawnRow   = 1;
+	m_respawnCol   = rand() % 2;
 	m_respawnDelay = 1.0f + (rand() % 9) * 0.5f;
 	m_isSnake = false;
 	m_Owner->SetPosition(-1000.f, -1000.f);

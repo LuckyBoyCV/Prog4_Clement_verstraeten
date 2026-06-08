@@ -20,6 +20,9 @@
 #include "../Q-bert/GameStateComponent.h"
 #include "../Q-bert/LevelDisplayComponent.h"
 #include "../Q-bert/RoundDisplayComponent.h"
+#include "../Q-bert/LivesDisplayComponent.h"
+#include "../Q-bert/ScoreDisplayComponent.h"
+#include "../Q-bert/ChangeToComponent.h"
 #include "../Q-bert/SlickSamComponent.h"
 #include "../Q-bert/mainMenuComponent.h"
 #include "../Q-bert/MenuCommand.h"
@@ -201,6 +204,46 @@ static void loadGame(qbert::gameMode mode)
 		qbert2->m_subject.AddObserver(slick);
 		qbert2->m_subject.AddObserver(sam);
 	}
+
+	// Player HUD (top-left): score (orange, arcade-style) above lives (white).
+	// Each display observes its own Q*bert and refreshes on the matching event;
+	// initial text shows the starting values.
+	auto scoreFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 28);
+
+	auto score1Go = std::make_unique<dae::GameObject>();
+	score1Go->SetPosition(40.f, 15.f);
+	score1Go->AddComponent<dae::TextComponent>(std::to_string(qbert1->getScore()), scoreFont)->SetColor({ 255, 165, 0, 255 });
+	qbert1->m_subject.AddObserver(score1Go->AddComponent<qbert::ScoreDisplayComponent>());
+	scene.Add(std::move(score1Go));
+
+	auto lives1Go = std::make_unique<dae::GameObject>();
+	lives1Go->SetPosition(40.f, 50.f);
+	lives1Go->AddComponent<dae::TextComponent>("Lives: " + std::to_string(qbert1->getLives()), smallFont)->SetColor({ 255, 255, 255, 255 });
+	qbert1->m_subject.AddObserver(lives1Go->AddComponent<qbert::LivesDisplayComponent>());
+	scene.Add(std::move(lives1Go));
+
+	if (qbert2)
+	{
+		auto score2Go = std::make_unique<dae::GameObject>();
+		score2Go->SetPosition(40.f, 95.f);
+		score2Go->AddComponent<dae::TextComponent>(std::to_string(qbert2->getScore()), scoreFont)->SetColor({ 255, 165, 0, 255 });
+		qbert2->m_subject.AddObserver(score2Go->AddComponent<qbert::ScoreDisplayComponent>());
+		scene.Add(std::move(score2Go));
+
+		auto lives2Go = std::make_unique<dae::GameObject>();
+		lives2Go->SetPosition(40.f, 130.f);
+		lives2Go->AddComponent<dae::TextComponent>("Lives: " + std::to_string(qbert2->getLives()), smallFont)->SetColor({ 255, 255, 255, 255 });
+		qbert2->m_subject.AddObserver(lives2Go->AddComponent<qbert::LivesDisplayComponent>());
+		scene.Add(std::move(lives2Go));
+	}
+
+	// "CHANGE TO:" indicator: plain-text label + the target swatch sprite, which
+	// follows the pyramid's colour set (so it re-colours each round).
+	auto changeToGo = std::make_unique<dae::GameObject>();
+	changeToGo->SetPosition(744.f, 150.f);
+	changeToGo->AddComponent<dae::TextComponent>("CHANGE TO:", smallFont)->SetColor({ 255, 255, 255, 255 });
+	changeToGo->AddComponent<qbert::ChangeToComponent>(pyramid);
+	scene.Add(std::move(changeToGo));
 
 	// Game state UI
 	auto gameStateGo = std::make_unique<dae::GameObject>();

@@ -19,7 +19,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSa
 	{
 		slickSam.m_subject.Notify(dae::GameEvent::EnemyDied, slickSam.getOwner());
 		slickSam.getOwner()->SetPosition(-1000.f, -1000.f);
-		return std::make_unique<SlickSamRespawningState>(slickSam.getRespawnDuration(), 0, 0);
+		return std::make_unique<SlickSamRespawningState>(slickSam.getRespawnDuration(), 1, std::rand() % 2);
 	}
 
 	m_jumpTime += deltaTime;
@@ -38,10 +38,12 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSa
 		return std::make_unique<SlickSamJumpingState>();
 	}
 
-	// No tile to land on — reset to the top of the pyramid
-	slickSam.setRow(0);
-	slickSam.setCol(0);
-	glm::vec2 pos = slickSam.getPyramid()->GetTileScreenPos(0, 0);
+	// Reached the bottom — re-enter at a random tile flanking the apex (grid 1 or grid 2)
+	const int row = 1;
+	const int col = std::rand() % 2;
+	slickSam.setRow(row);
+	slickSam.setCol(col);
+	glm::vec2 pos = slickSam.getPyramid()->GetTileScreenPos(row, col);
 	slickSam.getOwner()->SetPosition(pos.x + slickSam.getSpriteOffsetX(), pos.y - slickSam.getSpriteOffsetY());
 	return std::make_unique<SlickSamMovingState>();
 }

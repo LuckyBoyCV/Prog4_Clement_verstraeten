@@ -32,7 +32,15 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 
 		qbert.setRow(qbert.getFutureRow());
 		qbert.setCol(qbert.getFutureCol());
-		pyramid->StepOn(*pyramid->GetTile(qbert.getRow(), qbert.getCol()));
+
+		// award points only when the step actually changes the tile (so you can't
+		// farm score by hopping back onto an already-flipped tile).
+		Tile* landed = pyramid->GetTile(qbert.getRow(), qbert.getCol());
+		const TileState before = landed->state;
+		pyramid->StepOn(*landed);
+		if (landed->state != before)
+			qbert.addScore(25);
+
 		qbert.getOwner()->SetPosition(endPos.x + 30.f, endPos.y - 30.f);
 		return std::make_unique<QbertIdleState>();
 	}

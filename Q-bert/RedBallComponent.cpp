@@ -18,9 +18,9 @@ qbert::redBallComponent::redBallComponent(dae::GameObject* pOwner, PyramidCompon
 
 void qbert::redBallComponent::activate()
 {
-	// Start at top of pyramid
-	m_row = 0;
-	m_col = 0;
+	// Enter at a random tile flanking the apex (grid 1 or grid 2)
+	m_row = 1;
+	m_col = rand() % 2;
 	m_pendingRespawn = false;
 	setSprite(17, 16, 16, 16);
 	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
@@ -73,11 +73,9 @@ void qbert::redBallComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 	if (event != dae::GameEvent::PlayerDied) return;
 	if (!m_active) return;
 
-	static const int rows[] = { 0, 1, 1 };
-	static const int cols[] = { 0, 0, 1 };
-	int idx = rand() % 3;
-	m_respawnRow   = rows[idx];
-	m_respawnCol   = cols[idx];
+	// Re-enter at a random tile flanking the apex (grid 1 or grid 2)
+	m_respawnRow   = 1;
+	m_respawnCol   = rand() % 2;
 	m_respawnDelay = 1.0f + (rand() % 9) * 0.5f;
 
 	// Hide ball immediately; state transition applied at start of next Update

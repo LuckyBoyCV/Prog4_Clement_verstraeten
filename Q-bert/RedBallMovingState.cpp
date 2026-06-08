@@ -30,11 +30,13 @@ std::unique_ptr<qbert::RedBallState> qbert::RedBallMovingState::Update(redBallCo
 		return std::make_unique<RedBallJumpingState>();
 	}
 
-	// No tile to land on — reset to the top of the pyramid
-	ball.setRow(0);
-	ball.setCol(0);
+	// Reached the bottom — re-enter at a random tile flanking the apex (grid 1 or grid 2)
+	const int row = 1;
+	const int col = std::rand() % 2;
+	ball.setRow(row);
+	ball.setCol(col);
 	ball.setSprite(17, 16, 16, 16);
-	glm::vec2 pos = ball.getPyramid()->GetTileScreenPos(0, 0);
+	glm::vec2 pos = ball.getPyramid()->GetTileScreenPos(row, col);
 	ball.getOwner()->SetPosition(pos.x + ball.getSpriteOffsetX(), pos.y - ball.getSpriteOffsetY());
 	return std::make_unique<RedBallMovingState>();
 }
