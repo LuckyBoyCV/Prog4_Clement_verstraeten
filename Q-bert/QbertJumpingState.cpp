@@ -2,6 +2,7 @@
 #include "QbertComponent.h"
 #include "QbertIdleState.h"
 #include "QbertFallingState.h"
+#include "QbertDiskRidingState.h"
 #include "PyramidComponent.h"
 #include "GameObject.h"
 #include <algorithm>
@@ -25,7 +26,12 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 	{
 		if (!pyramid->GetTile(qbert.getFutureRow(), qbert.getFutureCol()))
 		{
-			// Landed outside the pyramid  start falling
+			// Off the pyramid: if a flying disc is there, ride it up instead of dying.
+			int disk = pyramid->GetDiskIndexAt(qbert.getFutureRow(), qbert.getFutureCol());
+			if (disk >= 0)
+				return std::make_unique<QbertDiskRidingState>(disk);
+
+			// Otherwise it's a genuine fall off the edge.
 			qbert.loseLife();
 			return std::make_unique<QbertFallingState>(glm::vec2{ endPos.x + 30.f, endPos.y - 30.f });
 		}
@@ -33,12 +39,10 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 		qbert.setRow(qbert.getFutureRow());
 		qbert.setCol(qbert.getFutureCol());
 
-		// award points only when the step actually changes the tile (so you can't
-		// farm score by hopping back onto an already-flipped tile).
+		// StepOn scores only when the tile advances toward its target colour, so
+		// re-hopping a finished tile (or a level-3 revert) earns nothing.
 		Tile* landed = pyramid->GetTile(qbert.getRow(), qbert.getCol());
-		const TileState before = landed->state;
-		pyramid->StepOn(*landed);
-		if (landed->state != before)
+		if (pyramid->StepOn(*landed))
 			qbert.addScore(25);
 
 		qbert.getOwner()->SetPosition(endPos.x + 30.f, endPos.y - 30.f);

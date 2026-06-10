@@ -27,6 +27,14 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 
 	if (t >= 1.f)
 	{
+		// Landed off the pyramid (and not onto a disc) -> Coily was lured over the edge.
+		PyramidComponent* pyramid = coily.getPyramid();
+		if (!pyramid->GetTile(m_destRow, m_destCol) && pyramid->GetDiskIndexAt(m_destRow, m_destCol) < 0)
+		{
+			coily.die();        // awards the player and queues Coily's respawn
+			return nullptr;     // die() drives the next state; skip the normal landing
+		}
+
 		coily.setRow(m_destRow);
 		coily.setCol(m_destCol);
 		coily.onTile(); // kill Q*bert if they share a tile

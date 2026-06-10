@@ -41,6 +41,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/QbertIdleState.cpp
   Q-bert/QbertJumpingState.cpp
   Q-bert/QbertFallingState.cpp
+  Q-bert/QbertDiskRidingState.cpp
   Q-bert/JumpCommand.cpp
   Q-bert/CoilyComponent.cpp
   Q-bert/CoilyEggState.cpp
@@ -65,6 +66,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/CoilyJumpCommand.cpp
   Q-bert/mainMenuComponent.cpp
   Q-bert/enemySpawnerComponent.cpp
+  Q-bert/levelConfig.cpp
 )
 
 
@@ -85,6 +87,19 @@ if(NOT glm_FOUND)
     DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
   )
   FetchContent_MakeAvailable(glm)
+endif()
+
+# add nlohmann/json (header-only; SYSTEM keeps its headers out of /W4 /WX)
+find_package(nlohmann_json 3.11 CONFIG QUIET)
+if(NOT nlohmann_json_FOUND)
+  FetchContent_Declare(
+    nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+    DOWNLOAD_NO_PROGRESS ON
+    DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+    SYSTEM
+  )
+  FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
 # Add SDL3
@@ -217,11 +232,12 @@ target_include_directories("${TARGET_NAME}" PUBLIC
   ${sdl3_mixer_SOURCE_DIR}/include
 )
 
-target_link_libraries("${TARGET_NAME}" PUBLIC 
-  SDL3::SDL3 
+target_link_libraries("${TARGET_NAME}" PUBLIC
+  SDL3::SDL3
   SDL3_ttf::SDL3_ttf
   imgui
   SDL3_mixer::SDL3_mixer
+  nlohmann_json::nlohmann_json
   ${VLD_LIBRARIES}
 )
 

@@ -35,7 +35,7 @@ void qbert::QbertComponent::Update(float deltaTime)
 
 bool qbert::QbertComponent::Move(int deltaRow, int deltaCol)
 {
-	if (isJumping() || isFalling())
+	if (isJumping() || isFalling() || isRidingDisk())
 		return false;
 
 	m_futureRow = m_row + deltaRow;
@@ -54,6 +54,11 @@ bool qbert::QbertComponent::isFalling() const
 	return m_pState && m_pState->isFalling();
 }
 
+bool qbert::QbertComponent::isRidingDisk() const
+{
+	return m_pState && m_pState->isRidingDisk();
+}
+
 void qbert::QbertComponent::loseLife()
 {
 	if (m_Lives > 0)
@@ -67,7 +72,7 @@ void qbert::QbertComponent::loseLife()
 
 void qbert::QbertComponent::kill()
 {
-	if (isJumping() || isFalling()) return;
+	if (isJumping() || isFalling() || isRidingDisk()) return;
 
 	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
 	SetState(std::make_unique<QbertFallingState>(glm::vec2{ pos.x + 30.f, pos.y - 30.f }));
@@ -80,6 +85,14 @@ void qbert::QbertComponent::Respawn()
 	m_col = m_startCol;
 	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + 30.f, pos.y - 30.f);
+}
+
+void qbert::QbertComponent::CancelRide()
+{
+	// A board refresh can land while Q*bert is riding a disc; drop him straight back to idle
+	// so the riding state stops touching a disc that PlaceDisks() just rebuilt.
+	if (isRidingDisk())
+		SetState(std::make_unique<QbertIdleState>());
 }
 
 void qbert::QbertComponent::addScore(int points)

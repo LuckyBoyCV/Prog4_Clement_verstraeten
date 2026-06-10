@@ -16,8 +16,16 @@ void qbert::ChangeToComponent::Render()
 	if (!m_spriteSheet) return;
 
 	const int set = m_pPyramid ? m_pPyramid->getColorSet() : 0;
-	const SDL_FRect src{ static_cast<float>(swatchBaseX + set * swatchStride),
-						 swatchY, swatchW, swatchH };
+
+	// Show the tile's *final* target colour. Levels 1 and 3 finish on the visited
+	// colour; level 2 needs two hops, so its swatch is the visitedTwice row (one
+	// state lower on the sheet) rather than the intermediate single-hop colour.
+	float srcY = swatchY;
+	if (m_pPyramid && m_pPyramid->getTargetState() == TileState::visitedTwice)
+		srcY += swatchStateStride;
+
+	const SDL_FRect srcRect{ static_cast<float>(swatchBaseX + set * swatchStride),
+						 srcY, swatchW, swatchH };
 
 	// Drawn just below the "CHANGE TO:" text label that shares this GameObject.
 	const glm::vec3 pos = m_Owner->GetWorldPosition();
@@ -25,5 +33,5 @@ void qbert::ChangeToComponent::Render()
 	const SDL_FRect dst{ pos.x, pos.y + 28.f, swatchW * scale, swatchH * scale };
 
 	SDL_RenderTexture(dae::Renderer::GetInstance().GetSDLRenderer(),
-		m_spriteSheet->GetSDLTexture(), &src, &dst);
+		m_spriteSheet->GetSDLTexture(), &srcRect, &dst);
 }

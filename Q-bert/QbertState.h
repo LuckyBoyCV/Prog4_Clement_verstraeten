@@ -16,5 +16,6 @@ namespace qbert
 		virtual void onExit(QbertComponent&) {}
 		virtual bool isJumping() const { return false; }
 		virtual bool isFalling() const { return false; }
+		virtual bool isRidingDisk() const { return false; }
 	};
 }

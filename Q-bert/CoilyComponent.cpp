@@ -131,6 +131,24 @@ void qbert::CoilyComponent::onTile()
 		m_pQbert->kill();
 }
 
+void qbert::CoilyComponent::die()
+{
+	if (!m_active) return;
+
+	// Bonus for luring Coily off the edge. Coily has no Subject of its own, so the score
+	// goes through Q*bert (which also notifies the score display).
+	if (m_pQbert)
+		m_pQbert->addScore(500);
+
+	// Re-enter as a fresh egg after a short delay, same as the post-PlayerDied respawn.
+	m_respawnRow   = 1;
+	m_respawnCol   = rand() % 2;
+	m_respawnDelay = 1.0f + (rand() % 9) * 0.5f;
+	m_isSnake = false;
+	m_Owner->SetPosition(-1000.f, -1000.f);
+	m_pendingRespawn = true;
+}
+
 void qbert::CoilyComponent::SetState(std::unique_ptr<CoilyState> newState)
 {
 	if (m_pState)

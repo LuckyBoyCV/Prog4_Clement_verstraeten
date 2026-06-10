@@ -27,9 +27,11 @@ namespace qbert
 		void kill();
 		void Respawn();
 		void addScore(int points);
+		void CancelRide();   // force back to idle (used when the board refreshes mid-ride)
 
 		bool isJumping() const;
 		bool isFalling() const;
+		bool isRidingDisk() const;
 
 		int getRow()       const { return m_row; }
 		int getCol()       const { return m_col; }

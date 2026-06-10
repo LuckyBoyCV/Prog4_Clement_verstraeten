@@ -1,0 +1,8 @@
+{
+  "roundsPerLevel": 4,
+  "levels": [
+    { "flipRule": "once",   "color": "random" },
+    { "flipRule": "twice",  "color": "random" },
+    { "flipRule": "toggle", "color": "random" }
+  ]
+}

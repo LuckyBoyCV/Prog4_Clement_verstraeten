@@ -28,11 +28,14 @@ namespace qbert
 		PyramidComponent* m_pPyramid;
 		std::shared_ptr<dae::Texture2D> m_spriteSheet;
 
-		// Visited-state mini cube on the sheet: x = swatchBaseX + colourSet * stride.
-		static constexpr int   swatchBaseX  = 65;
+		// Mini cube on the sheet: x = swatchBaseX + colourSet * swatchStride.
+		// swatchY is the visited-state row; the next state (visitedTwice) sits one
+		// swatchStateStride lower, so the swatch can show level 2's final colour.
+		static constexpr int   swatchBaseX = 65;
 		static constexpr int   swatchStride = 80;
-		static constexpr float swatchY      = 196.f;
-		static constexpr float swatchW      = 14.f;
-		static constexpr float swatchH      = 12.f;
+		static constexpr float swatchY = 196.f;
+		static constexpr float swatchStateStride = 32.f;
+		static constexpr float swatchW = 14.f;
+		static constexpr float swatchH = 12.f;
 	};
 }

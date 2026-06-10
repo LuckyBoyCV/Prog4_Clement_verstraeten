@@ -26,14 +26,17 @@
 #include "../Q-bert/SlickSamComponent.h"
 #include "../Q-bert/mainMenuComponent.h"
 #include "../Q-bert/MenuCommand.h"
+#include "../Q-bert/SkipLevelCommand.h"
 #include "../Q-bert/coilyJumpCommand.h"
 #include "../Q-bert/gameMode.h"
 #include "../Q-bert/Enemy.h"
 #include "../Q-bert/enemySpawnerComponent.h"
+#include "../Q-bert/levelConfig.h"
 
 #include <filesystem>
 #include <cstdlib>
 #include <ctime>
+#include <utility>
 namespace fs = std::filesystem;
 
 static void loadGame(qbert::gameMode mode);
@@ -252,7 +255,16 @@ static void loadGame(qbert::gameMode mode)
 	// Round progression: completing the pyramid advances the round and resets things
 	gameState->setPyramid(pyramid);
 	gameState->addQbert(qbert1);
-	gameState->addQbert(qbert2); 
+	gameState->addQbert(qbert2);
+
+	// Levels are data-driven: read the table from Data/levels.json (falls back to sane
+	// defaults if the file is missing/invalid) and hand it to the game state. Must come
+	// after setPyramid so level 1's flip rule/colour can be applied to the pyramid now.
+	auto levels = qbert::loadLevelConfig(dae::ResourceManager::GetInstance().GetDataPath() / "levels.json");
+	gameState->setConfig(std::move(levels));
+
+	// F1 skips straight to the next level (debug/demo shortcut)
+	input.BindKeyboardCommand(SDL_SCANCODE_F1, dae::KeyState::Down, std::make_unique<qbert::SkipLevelCommand>(gameState));
 
 	// Enemy spawner: gates which enemies are active per round and enforces the cap
 	auto spawnerGo = std::make_unique<dae::GameObject>();

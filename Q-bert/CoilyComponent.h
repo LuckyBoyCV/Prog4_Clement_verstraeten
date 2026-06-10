@@ -54,6 +54,7 @@ namespace qbert
 		float             getSpriteOffsetY() const { return m_spriteOffsetY; }
 
 		void onTile();
+		void die();   // lured off the edge: award the player and queue a respawn
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
 
 	private:
