@@ -66,7 +66,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/CoilyJumpCommand.cpp
   Q-bert/MainMenuComponent.cpp
   Q-bert/EnemySpawnerComponent.cpp
-  "Q-bert/LevelConfig.cpp"
+  Q-bert/LevelConfig.cpp
 )
 
 

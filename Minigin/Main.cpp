@@ -86,6 +86,11 @@ static void loadMenu()
 	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
 	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
 	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::KeyState::Down, std::make_unique<qbert::MenuConfirmCommand>(menuComp));
+
+	// Controller 0 can also drive the menu (D-pad to move, A to confirm)
+	input.BindControllerCommand(0, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
+	input.BindControllerCommand(0, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
+	input.BindControllerCommand(0, dae::Controller::button::ButtonA, dae::KeyState::Down, std::make_unique<qbert::MenuConfirmCommand>(menuComp));
 }
 
 static void loadGame(qbert::gameMode mode)
@@ -119,6 +124,12 @@ static void loadGame(qbert::gameMode mode)
 		input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
 
+		// Player 1 controller (controller 0, D-pad)
+		input.BindControllerCommand(0, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1,  0));
+		input.BindControllerCommand(0, dae::Controller::button::DpadRight, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1, +1));
+		input.BindControllerCommand(0, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1,  0));
+		input.BindControllerCommand(0, dae::Controller::button::DpadLeft, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
+
 		scene.Add(std::move(qbertGo));
 	}
 	else if (mode == qbert::gameMode::Coop)
@@ -136,6 +147,12 @@ static void loadGame(qbert::gameMode mode)
 		input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1, -1));
 
+		// Player 1 controller (controller 0, D-pad)
+		input.BindControllerCommand(0, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1,  0));
+		input.BindControllerCommand(0, dae::Controller::button::DpadRight, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1, +1));
+		input.BindControllerCommand(0, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1,  0));
+		input.BindControllerCommand(0, dae::Controller::button::DpadLeft, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1, -1));
+
 		// Player 2 starts bottom right corner
 		auto qbert2Go = std::make_unique<dae::GameObject>();
 		auto* render2 = qbert2Go->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
@@ -148,6 +165,12 @@ static void loadGame(qbert::gameMode mode)
 		input.BindKeyboardCommand(SDL_SCANCODE_D, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), +1, +1));
 		input.BindKeyboardCommand(SDL_SCANCODE_S, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), +1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_A, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), -1, -1));
+
+		// Player 2 controller (controller 1, D-pad)
+		input.BindControllerCommand(1, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), -1,  0));
+		input.BindControllerCommand(1, dae::Controller::button::DpadRight, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), +1, +1));
+		input.BindControllerCommand(1, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), +1,  0));
+		input.BindControllerCommand(1, dae::Controller::button::DpadLeft, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert2Go.get(), -1, -1));
 
 		scene.Add(std::move(qbert1Go));
 		scene.Add(std::move(qbert2Go));
@@ -166,6 +189,12 @@ static void loadGame(qbert::gameMode mode)
 		input.BindKeyboardCommand(SDL_SCANCODE_D, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), +1, +1));
 		input.BindKeyboardCommand(SDL_SCANCODE_S, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), +1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_A, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), -1, -1));
+
+		// Player 2 controls Coily with controller 1 (D-pad)
+		input.BindControllerCommand(1, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), -1,  0));
+		input.BindControllerCommand(1, dae::Controller::button::DpadRight, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), +1, +1));
+		input.BindControllerCommand(1, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), +1,  0));
+		input.BindControllerCommand(1, dae::Controller::button::DpadLeft, dae::KeyState::Down, std::make_unique<qbert::coilyJumpCommand>(coilyGo.get(), -1, -1));
 	}
 	scene.Add(std::move(coilyGo));
 

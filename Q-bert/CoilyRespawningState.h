@@ -9,6 +9,7 @@ namespace qbert
 	public:
 		CoilyRespawningState(float delay, int respawnRow, int respawnCol);
 		std::unique_ptr<CoilyState> Update(CoilyComponent& coily, float deltaTime) override;
+		bool isDangerous() const override { return false; } // off-screen waiting to hatch, can't kill
 	private:
 		float m_delay;
 		float m_timer{ 0.f };

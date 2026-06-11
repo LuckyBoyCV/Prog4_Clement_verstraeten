@@ -65,10 +65,10 @@ void qbert::CoilyComponent::Update(float deltaTime)
 		return;
 	}
 
-	// Kill Q*bert if he lands on this tile while Coily is a snake
+	// Kill Q*bert if he lands on this tile while Coily is here (egg or snake)
 	bool qbertJustLanded = m_qbertWasJumping && !m_pQbert->isJumping();
 	m_qbertWasJumping = m_pQbert->isJumping();
-	if (m_isSnake && qbertJustLanded && m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
+	if (m_pState && m_pState->isDangerous() && qbertJustLanded && m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 		m_pQbert->kill();
 
 	if (m_pState)
@@ -126,7 +126,7 @@ void qbert::CoilyComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 
 void qbert::CoilyComponent::onTile()
 {
-	if (!m_isSnake) return;
+	if (!m_pState || !m_pState->isDangerous()) return;
 	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 		m_pQbert->kill();
 }
