@@ -62,6 +62,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/SlickSamMovingState.cpp
   Q-bert/SlickSamJumpingState.cpp
   Q-bert/SlickSamRespawningState.cpp
+  Q-bert/UggWrongwayComponent.cpp
+  Q-bert/UggWrongwayMovingState.cpp
+  Q-bert/UggWrongwayJumpingState.cpp
+  Q-bert/UggWrongwayRespawningState.cpp
   Q-bert/CoilyPlayerState.cpp
   Q-bert/CoilyJumpCommand.cpp
   Q-bert/MainMenuComponent.cpp

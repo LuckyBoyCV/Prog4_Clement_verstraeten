@@ -24,6 +24,7 @@
 #include "../Q-bert/ScoreDisplayComponent.h"
 #include "../Q-bert/ChangeToComponent.h"
 #include "../Q-bert/SlickSamComponent.h"
+#include "../Q-bert/UggWrongwayComponent.h"
 #include "../Q-bert/mainMenuComponent.h"
 #include "../Q-bert/MenuCommand.h"
 #include "../Q-bert/SkipLevelCommand.h"
@@ -220,11 +221,29 @@ static void loadGame(qbert::gameMode mode)
 	auto* sam = samGo->AddComponent<qbert::SlickSamComponent>(pyramid, qbert1);
 	scene.Add(std::move(samGo));
 
+	// Ugg climbs the right edge of the pyramid upward, lethal to Q*bert on contact
+	auto uggGo = std::make_unique<dae::GameObject>();
+	auto* uggRender = uggGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
+	uggRender->SetSourceRect(82, 97, 12, 18);   // estimated purple Ugg frame, tweak to pixel fit
+	uggRender->SetScale(2.5f);
+	auto* ugg = uggGo->AddComponent<qbert::UggWrongwayComponent>(pyramid, qbert1, qbert::UggWrongwaySide::right);
+	scene.Add(std::move(uggGo));
+
+	// Wrongway climbs the left edge of the pyramid upward, lethal to Q*bert on contact
+	auto wrongwayGo = std::make_unique<dae::GameObject>();
+	auto* wrongwayRender = wrongwayGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
+	wrongwayRender->SetSourceRect(82, 112, 12, 18); // estimated purple Wrongway frame, tweak to pixel fit
+	wrongwayRender->SetScale(2.5f);
+	auto* wrongway = wrongwayGo->AddComponent<qbert::UggWrongwayComponent>(pyramid, qbert1, qbert::UggWrongwaySide::left);
+	scene.Add(std::move(wrongwayGo));
+
 	// Wire up observers
 	qbert1->m_subject.AddObserver(coily);
 	qbert1->m_subject.AddObserver(redBall);
 	qbert1->m_subject.AddObserver(slick);
 	qbert1->m_subject.AddObserver(sam);
+	qbert1->m_subject.AddObserver(ugg);
+	qbert1->m_subject.AddObserver(wrongway);
 
 	if (qbert2)
 	{
@@ -232,6 +251,8 @@ static void loadGame(qbert::gameMode mode)
 		qbert2->m_subject.AddObserver(redBall);
 		qbert2->m_subject.AddObserver(slick);
 		qbert2->m_subject.AddObserver(sam);
+		qbert2->m_subject.AddObserver(ugg);
+		qbert2->m_subject.AddObserver(wrongway);
 	}
 
 	// Player HUD (top-left): score 
@@ -293,7 +314,7 @@ static void loadGame(qbert::gameMode mode)
 
 	// Enemy spawner:  which enemies are active per round and enforces the cap
 	auto spawnerGo = std::make_unique<dae::GameObject>();
-	auto* spawner = spawnerGo->AddComponent<qbert::EnemySpawnerComponent>(gameState, coily, redBall, slick, sam);
+	auto* spawner = spawnerGo->AddComponent<qbert::EnemySpawnerComponent>(gameState, coily, redBall, slick, sam, ugg, wrongway);
 	gameState->m_subject.AddObserver(spawner);
 	slick->m_subject.AddObserver(spawner); // EnemyDied frees the slot
 	sam->m_subject.AddObserver(spawner);

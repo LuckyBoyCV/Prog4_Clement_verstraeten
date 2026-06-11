@@ -4,13 +4,15 @@
 #include "GameEvent.h"
 
 qbert::EnemySpawnerComponent::EnemySpawnerComponent(dae::GameObject* owner, GameStateComponent* gameState,
-	Enemy* coily, Enemy* redBall, Enemy* slick, Enemy* sam)
+	Enemy* coily, Enemy* redBall, Enemy* slick, Enemy* sam, Enemy* ugg, Enemy* wrongway)
 	: Component(owner)
 	, m_pGameState(gameState)
 	, m_pCoily(coily)
 	, m_pRedBall(redBall)
 	, m_pSlick(slick)
 	, m_pSam(sam)
+	, m_pUgg(ugg)
+	, m_pWrongway(wrongway)
 {
 }
 
@@ -20,11 +22,13 @@ void qbert::EnemySpawnerComponent::setupRoundEnemies()
 	m_pRedBall->deactivate();
 	m_pSlick->deactivate();
 	m_pSam->deactivate();
+	m_pUgg->deactivate();
+	m_pWrongway->deactivate();
 	m_pCurrent = nullptr;
 
 	m_pCoily->activate();
 
-	// Build the descender pool for this round.
+	// Build the rotation pool for this round
 	const int round = m_pGameState->getRound();
 	m_roundDescenders.clear();
 	if (round >= 2)
@@ -35,6 +39,11 @@ void qbert::EnemySpawnerComponent::setupRoundEnemies()
 	if (round >= 3)
 	{
 		m_roundDescenders.push_back(m_pRedBall);
+	}
+	if (round >= 4)
+	{
+		m_roundDescenders.push_back(m_pUgg);
+		m_roundDescenders.push_back(m_pWrongway);
 	}
 
 	m_rotationIndex = 0;
