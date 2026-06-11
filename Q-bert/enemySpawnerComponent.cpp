@@ -3,7 +3,7 @@
 #include "Enemy.h"
 #include "GameEvent.h"
 
-qbert::enemySpawnerComponent::enemySpawnerComponent(dae::GameObject* owner, GameStateComponent* gameState,
+qbert::EnemySpawnerComponent::EnemySpawnerComponent(dae::GameObject* owner, GameStateComponent* gameState,
 	Enemy* coily, Enemy* redBall, Enemy* slick, Enemy* sam)
 	: Component(owner)
 	, m_pGameState(gameState)
@@ -14,7 +14,7 @@ qbert::enemySpawnerComponent::enemySpawnerComponent(dae::GameObject* owner, Game
 {
 }
 
-void qbert::enemySpawnerComponent::gateForRound()
+void qbert::EnemySpawnerComponent::setupRoundEnemies()
 {
 	// Clear the field, then bring Coily back (always present from round 1).
 	m_pRedBall->deactivate();
@@ -26,31 +26,31 @@ void qbert::enemySpawnerComponent::gateForRound()
 
 	// Build the descender pool for this round.
 	const int round = m_pGameState->getRound();
-	m_eligible.clear();
+	m_roundDescenders.clear();
 	if (round >= 2)
 	{
-		m_eligible.push_back(m_pSlick);
-		m_eligible.push_back(m_pSam);
+		m_roundDescenders.push_back(m_pSlick);
+		m_roundDescenders.push_back(m_pSam);
 	}
 	if (round >= 3)
 	{
-		m_eligible.push_back(m_pRedBall);
+		m_roundDescenders.push_back(m_pRedBall);
 	}
 
 	m_rotationIndex = 0;
-	m_freeTimer = 0.f;
+	m_descenderCooldownTimer = 0.f;
 	m_lifeTimer = 0.f;
 }
 
-void qbert::enemySpawnerComponent::Update(float deltaTime)
+void qbert::EnemySpawnerComponent::Update(float deltaTime)
 {
 	if (!m_gated)
 	{
-		gateForRound(); // round 1 gate (no roundChanged fires at start)
+		setupRoundEnemies(); // round 1 gate (no roundChanged fires at start)
 		m_gated = true;
 	}
 
-	if (m_eligible.empty())
+	if (m_roundDescenders.empty())
 		return; // round 1: Coily only, nothing to pace
 
 	// Coily already occupies one of the slots, so only kMaxConcurrent - 1 descenders fit.
@@ -58,38 +58,38 @@ void qbert::enemySpawnerComponent::Update(float deltaTime)
 	if (activeDescenders == 0)
 		m_pCurrent = nullptr;
 
-	if (activeDescenders >= kMaxConcurrent - 1)
+	if (activeDescenders >= maxSimultaneousEnemies - 1)
 	{
 		// Slot is full: let the descender run for a while, then rotate it out.
 		m_lifeTimer += deltaTime;
-		if (m_lifeTimer >= kDescenderLife)
+		if (m_lifeTimer >= descenderLife)
 		{
 			m_pCurrent->deactivate();
 			m_pCurrent = nullptr;
-			m_freeTimer = 0.f;
+			m_descenderCooldownTimer = 0.f;
 		}
 		return;
 	}
 
 	// Slot is free: bring in the next eligible descender once the delay elapses.
-	m_freeTimer += deltaTime;
-	const float delay = (m_rotationIndex == 0) ? kFirstSpawnDelay : kRotationGap;
-	if (m_freeTimer >= delay)
+	m_descenderCooldownTimer += deltaTime;
+	const float delay = (m_rotationIndex == 0) ? firstDescenderDelay : descenderSpawnInterval;
+	if (m_descenderCooldownTimer >= delay)
 	{
-		Enemy* next = m_eligible[m_rotationIndex % m_eligible.size()];
+		Enemy* next = m_roundDescenders[m_rotationIndex % m_roundDescenders.size()];
 		++m_rotationIndex;
 		next->activate();
 		m_pCurrent = next;
 		m_lifeTimer = 0.f;
-		m_freeTimer = 0.f;
+		m_descenderCooldownTimer = 0.f;
 	}
 }
 
-void qbert::enemySpawnerComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
+void qbert::EnemySpawnerComponent::OnNotify(dae::GameEvent event, dae::GameObject*)
 {
 	if (event == dae::GameEvent::roundChanged || event == dae::GameEvent::levelChanged)
 	{
-		gateForRound();
+		setupRoundEnemies();
 	}
 	else if (event == dae::GameEvent::EnemyDied)
 	{
@@ -98,7 +98,7 @@ void qbert::enemySpawnerComponent::OnNotify(dae::GameEvent event, dae::GameObjec
 		{
 			m_pCurrent->deactivate();
 			m_pCurrent = nullptr;
-			m_freeTimer = 0.f;
+			m_descenderCooldownTimer = 0.f;
 		}
 	}
 }

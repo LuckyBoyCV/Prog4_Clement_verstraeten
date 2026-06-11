@@ -13,8 +13,8 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 	float t = std::min(m_jumpTime / qbert.getJumpDuration(), 1.f);
 
 	PyramidComponent* pyramid = qbert.getPyramid();
-	glm::vec2 startPos = pyramid->GetTileScreenPos(qbert.getRow(), qbert.getCol());
-	glm::vec2 endPos   = pyramid->GetTileScreenPos(qbert.getFutureRow(), qbert.getFutureCol());
+	glm::vec2 startPos = pyramid->getTileScreenPos(qbert.getRow(), qbert.getCol());
+	glm::vec2 endPos   = pyramid->getTileScreenPos(qbert.getFutureRow(), qbert.getFutureCol());
 
 	float arc = -4.f * t * (t - 1.f);
 	qbert.getOwner()->SetPosition(
@@ -24,10 +24,10 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 
 	if (t >= 1.f)
 	{
-		if (!pyramid->GetTile(qbert.getFutureRow(), qbert.getFutureCol()))
+		if (!pyramid->getTile(qbert.getFutureRow(), qbert.getFutureCol()))
 		{
 			// Off the pyramid: if a flying disc is there, ride it up instead of dying.
-			int disk = pyramid->GetDiskIndexAt(qbert.getFutureRow(), qbert.getFutureCol());
+			int disk = pyramid->getDiskIndexAt(qbert.getFutureRow(), qbert.getFutureCol());
 			if (disk >= 0)
 				return std::make_unique<QbertDiskRidingState>(disk);
 
@@ -41,8 +41,8 @@ std::unique_ptr<qbert::QbertState> qbert::QbertJumpingState::Update(QbertCompone
 
 		// StepOn scores only when the tile advances toward its target colour, so
 		// re-hopping a finished tile (or a level-3 revert) earns nothing.
-		Tile* landed = pyramid->GetTile(qbert.getRow(), qbert.getCol());
-		if (pyramid->StepOn(*landed))
+		Tile* landed = pyramid->getTile(qbert.getRow(), qbert.getCol());
+		if (pyramid->stepOn(*landed))
 			qbert.addScore(25);
 
 		qbert.getOwner()->SetPosition(endPos.x + 30.f, endPos.y - 30.f);

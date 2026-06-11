@@ -17,7 +17,7 @@ qbert::QbertComponent::QbertComponent(dae::GameObject* pOwner, PyramidComponent*
 	m_startRow(startRow),
 	m_startCol(startCol)
 {
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
+	if (auto* tile = m_pPyramid->getTile(m_row, m_col))
 		m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y - 30.f);
 
 	m_pState = std::make_unique<QbertIdleState>();
@@ -74,7 +74,7 @@ void qbert::QbertComponent::kill()
 {
 	if (isJumping() || isFalling() || isRidingDisk()) return;
 
-	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	glm::vec2 pos = m_pPyramid->getTileScreenPos(m_row, m_col);
 	SetState(std::make_unique<QbertFallingState>(glm::vec2{ pos.x + 30.f, pos.y - 30.f }));
 	loseLife();
 }
@@ -83,7 +83,7 @@ void qbert::QbertComponent::Respawn()
 {
 	m_row = m_startRow;
 	m_col = m_startCol;
-	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	glm::vec2 pos = m_pPyramid->getTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + 30.f, pos.y - 30.f);
 }
 

@@ -21,7 +21,7 @@ void qbert::GameStateComponent::Update(float)
 	// advances the level (resetting to round 1); clearing the final round of the last
 	// level ends the game. Otherwise we just bump the round. refreshBoard() then clears
 	// the pyramid so IsStepped() is false again next frame (no double-trigger).
-	if (m_pPyramid && m_pPyramid->IsStepped())
+	if (m_pPyramid && m_pPyramid->isStepped())
 	{
 		if (m_round >= m_config.roundsPerLevel)
 		{
@@ -86,13 +86,13 @@ void qbert::GameStateComponent::refreshBoard()
 	}
 	else
 	{
-		const int count   = PyramidComponent::ColorSetCount;
+		const int count   = PyramidComponent::colorSetCount;
 		const int current = m_pPyramid->getColorSet();
 		m_pPyramid->setColorSet((current + 1 + std::rand() % (count - 1)) % count);
 	}
 
-	m_pPyramid->Reset();
-	m_pPyramid->PlaceDisks();   // fresh discs for the new round
+	m_pPyramid->reset();
+	m_pPyramid->placeDisks();   // fresh discs for the new round
 	for (auto* qbert : m_qberts)
 	{
 		qbert->CancelRide();    // nobody stays stuck mid-ride across a refresh
@@ -106,7 +106,7 @@ void qbert::GameStateComponent::endGame()
 	m_subject.Notify(dae::GameEvent::GameOver, m_Owner);
 }
 
-void qbert::GameStateComponent::setConfig(levelConfig config)
+void qbert::GameStateComponent::setConfig(LevelConfig config)
 {
 	// Installed once during loadGame (after the pyramid is wired). Applying it here makes the
 	// first level's flip rule/colour take effect immediately, before round 1 starts.

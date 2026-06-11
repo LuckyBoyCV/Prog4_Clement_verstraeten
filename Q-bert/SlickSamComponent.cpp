@@ -24,7 +24,7 @@ void qbert::SlickSamComponent::activate()
 	m_futureRow = m_row;
 	m_futureCol = m_col;
 	m_pendingRespawn = false;
-	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	glm::vec2 pos = m_pPyramid->getTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
 
 	m_pState = std::make_unique<SlickSamMovingState>();
@@ -65,8 +65,8 @@ bool qbert::SlickSamComponent::isJumping() const
 
 bool qbert::SlickSamComponent::onTile()
 {
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
-		m_pPyramid->ReverseStep(*tile);
+	if (auto* tile = m_pPyramid->getTile(m_row, m_col))
+		m_pPyramid->reverseStep(*tile);
 
 	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 	{

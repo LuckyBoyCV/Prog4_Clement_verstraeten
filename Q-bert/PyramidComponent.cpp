@@ -36,23 +36,23 @@ qbert::PyramidComponent::PyramidComponent(dae::GameObject* pOwner)
 			tile.row = r;
 			tile.col = c;
 			tile.state = TileState::empty;
-			tile.position = GetTileScreenPos(r, c);
-			UpdateTileSprite(tile);
+			tile.position = getTileScreenPos(r, c);
+			updateTileSprite(tile);
 
 		}
 	}
 
-	PlaceDisks();
+	placeDisks();
 }
 
-Tile* qbert::PyramidComponent::GetTile(int row, int col)
+Tile* qbert::PyramidComponent::getTile(int row, int col)
 {
 	if (row < 0 || row >= Rows || col < 0 || col > row)
 		return nullptr;
 	return &m_Tiles[row][col];
 }
 
-bool qbert::PyramidComponent::StepOn(Tile& tile)
+bool qbert::PyramidComponent::stepOn(Tile& tile)
 {
 	const TileState before = tile.state;
 
@@ -81,14 +81,14 @@ bool qbert::PyramidComponent::StepOn(Tile& tile)
 		break;
 	}
 
-	UpdateTileSprite(tile);
+	updateTileSprite(tile);
 
 	// Score only when the tile advances toward its target colour, so level-3
 	// reverts and re-hopping an already-finished tile award nothing.
 	return static_cast<int>(tile.state) > static_cast<int>(before);
 }
 
-bool qbert::PyramidComponent::IsStepped() const
+bool qbert::PyramidComponent::isStepped() const
 {
 	// Round is complete once every tile (disks aside) sits on its target state.
 	// That target depends on the tile's flip rule: visitedTwice for level 2,
@@ -107,7 +107,7 @@ bool qbert::PyramidComponent::IsStepped() const
 	return true;
 }
 
-void qbert::PyramidComponent::Reset()
+void qbert::PyramidComponent::reset()
 {
 	for (int r = 0; r < Rows; ++r)
 	{
@@ -115,20 +115,20 @@ void qbert::PyramidComponent::Reset()
 		{
 			auto& tile = m_Tiles[r][c];
 			tile.state = TileState::empty;
-			UpdateTileSprite(tile);
+			updateTileSprite(tile);
 		}
 	}
 }
 
 TileState qbert::PyramidComponent::getTargetState() const
 {
-	// Every tile shares the level's flip rule, so the apex's type is representative.
+		// Every tile shares the level's flip rule, so the apex's type is representative.
 	return TargetStateFor(m_Tiles[0][0].type);
 }
 
 void qbert::PyramidComponent::setFlipRule(TileType type)
 {
-	// Re-type every tile (discs excepted) so StepOn/IsStepped follow this level's flip rule.
+	// Re-type every tile (discs excepted) so stepOn/isStepped follow this level's flip rule.
 	for (int r = 0; r < Rows; ++r)
 		for (int c = 0; c <= r; ++c)
 			if (m_Tiles[r][c].type != TileType::disk)
@@ -140,10 +140,10 @@ void qbert::PyramidComponent::setColorSet(int set)
 	m_colorSet = set;
 	for (int r = 0; r < Rows; ++r)
 		for (int c = 0; c <= r; ++c)
-			UpdateTileSprite(m_Tiles[r][c]);
+			updateTileSprite(m_Tiles[r][c]);
 }
 
-void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
+void qbert::PyramidComponent::updateTileSprite(Tile& tile)
 {
 	int stateOffset = 32;
 	switch (tile.state)
@@ -159,35 +159,35 @@ void qbert::PyramidComponent::UpdateTileSprite(Tile& tile)
 		break;
 	}
 
-	tile.spriteX = m_colorSet * ColorSetStride;
+	tile.spriteX = m_colorSet * colorSetOffset;
 	tile.spriteY = 160+stateOffset;
 	tile.spriteW = 32;
 	tile.spriteH = 32;
 }
 
-void qbert::PyramidComponent::ReverseStep(Tile& tile)
+void qbert::PyramidComponent::reverseStep(Tile& tile)
 {
 	if (tile.state == TileState::visited)
 		tile.state = TileState::empty;
 	else if (tile.state == TileState::visitedTwice)
 		tile.state = TileState::visited;
 	
-	UpdateTileSprite(tile);
+	updateTileSprite(tile);
 }
 
-glm::vec2 qbert::PyramidComponent::GetTileScreenPos(int row, int col) const
+glm::vec2 qbert::PyramidComponent::getTileScreenPos(int row, int col) const
 {
 	float x = StartX + (col - row * 0.5f) * TileW;
 	float y = StartY + row * (TileH - 20.f);
 	return { x,y };
 };
 
-void qbert::PyramidComponent::SetTileType(Tile& tile, TileType type)
+void qbert::PyramidComponent::setTileType(Tile& tile, TileType type)
 {
 	tile.type = type;
 }
 
-void qbert::PyramidComponent::PlaceDisks()
+void qbert::PyramidComponent::placeDisks()
 {
 	// Two discs per board: one off the left edge (col -1), one off the right (col row+1),
 	// both on DiskRow. Rebuilt every round so consumed discs come back.
@@ -196,17 +196,17 @@ void qbert::PyramidComponent::PlaceDisks()
 	Disk left{};
 	left.row = DiskRow;
 	left.col = -1;
-	left.position = GetTileScreenPos(left.row, left.col);
+	left.position = getTileScreenPos(left.row, left.col);
 	m_Disks.push_back(left);
 
 	Disk right{};
 	right.row = DiskRow;
 	right.col = DiskRow + 1;
-	right.position = GetTileScreenPos(right.row, right.col);
+	right.position = getTileScreenPos(right.row, right.col);
 	m_Disks.push_back(right);
 }
 
-int qbert::PyramidComponent::GetDiskIndexAt(int row, int col) const
+int qbert::PyramidComponent::getDiskIndexAt(int row, int col) const
 {
 	for (int i = 0; i < static_cast<int>(m_Disks.size()); ++i)
 	{
@@ -217,17 +217,17 @@ int qbert::PyramidComponent::GetDiskIndexAt(int row, int col) const
 	return -1;
 }
 
-Disk& qbert::PyramidComponent::GetDisk(int index)
+Disk& qbert::PyramidComponent::getDisk(int index)
 {
 	return m_Disks[index];
 }
 
-const Disk& qbert::PyramidComponent::GetDisk(int index) const
+const Disk& qbert::PyramidComponent::getDisk(int index) const
 {
 	return m_Disks[index];
 }
 
-void qbert::PyramidComponent::ConsumeDisk(int index)
+void qbert::PyramidComponent::consumeDisk(int index)
 {
 	if (index >= 0 && index < static_cast<int>(m_Disks.size()))
 		m_Disks[index].active = false;

@@ -58,36 +58,33 @@ static void loadMenu()
 	
 	// Menu options
 	constexpr float menuX = 380.f;
-	std::vector<dae::TextComponent*> menuItems;
+	std::vector<dae::TextComponent*> menuModes;
 
-	auto item1Go = std::make_unique<dae::GameObject>();
-	item1Go->SetPosition(menuX, 230.f);
-	menuItems.push_back(item1Go->AddComponent<dae::TextComponent>("Single Player", menuFont));
-	scene.Add(std::move(item1Go));
+	auto mode1Go = std::make_unique<dae::GameObject>();
+	mode1Go->SetPosition(menuX, 230.f);
+	menuModes.push_back(mode1Go->AddComponent<dae::TextComponent>("Single Player", menuFont));
+	scene.Add(std::move(mode1Go));
 
-	auto item2Go = std::make_unique<dae::GameObject>();
-	item2Go->SetPosition(menuX, 295.f);
-	menuItems.push_back(item2Go->AddComponent<dae::TextComponent>("Co-op", menuFont));
-	scene.Add(std::move(item2Go));
+	auto mode2Go = std::make_unique<dae::GameObject>();
+	mode2Go->SetPosition(menuX, 295.f);
+	menuModes.push_back(mode2Go->AddComponent<dae::TextComponent>("Co-op", menuFont));
+	scene.Add(std::move(mode2Go));
 
-	auto item3Go = std::make_unique<dae::GameObject>();
-	item3Go->SetPosition(menuX, 360.f);
-	menuItems.push_back(item3Go->AddComponent<dae::TextComponent>("Versus", menuFont));
-	scene.Add(std::move(item3Go));
+	auto mode3Go = std::make_unique<dae::GameObject>();
+	mode3Go->SetPosition(menuX, 360.f);
+	menuModes.push_back(mode3Go->AddComponent<dae::TextComponent>("Versus", menuFont));
+	scene.Add(std::move(mode3Go));
 
 	
 	// Menu controller
 	auto menuGo = std::make_unique<dae::GameObject>();
-	auto* menuComp = menuGo->AddComponent<qbert::mainMenuComponent>(
-		menuItems,
-		[](qbert::gameMode mode) { loadGame(mode); }
-	);
+	auto* menuComp = menuGo->AddComponent<qbert::MainMenuComponent>(menuModes, loadGame);
 	scene.Add(std::move(menuGo));
 
 	auto& input = dae::InputManager::GetInstance();
 	input.ClearAllBindings();
-	input.BindKeyboardCommand(SDL_SCANCODE_UP,     dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
-	input.BindKeyboardCommand(SDL_SCANCODE_DOWN,   dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
+	input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
 	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::KeyState::Down, std::make_unique<qbert::MenuConfirmCommand>(menuComp));
 }
 
@@ -117,10 +114,10 @@ static void loadGame(qbert::gameMode mode)
 		qbertGo->AddComponent<qbert::QbertComponent>(pyramid, 0, 0);
 		qbert1 = qbertGo->GetComponent<qbert::QbertComponent>();
 
-		input.BindKeyboardCommand(SDL_SCANCODE_UP,    dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1,  0));
+		input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1, +1));
-		input.BindKeyboardCommand(SDL_SCANCODE_DOWN,  dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1,  0));
-		input.BindKeyboardCommand(SDL_SCANCODE_LEFT,  dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
+		input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), +1,  0));
+		input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbertGo.get(), -1, -1));
 
 		scene.Add(std::move(qbertGo));
 	}
@@ -134,10 +131,10 @@ static void loadGame(qbert::gameMode mode)
 		qbert1Go->AddComponent<qbert::QbertComponent>(pyramid, 6, 0);
 		qbert1 = qbert1Go->GetComponent<qbert::QbertComponent>();
 
-		input.BindKeyboardCommand(SDL_SCANCODE_UP,    dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1,  0));
+		input.BindKeyboardCommand(SDL_SCANCODE_UP, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1,  0));
 		input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1, +1));
-		input.BindKeyboardCommand(SDL_SCANCODE_DOWN,  dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1,  0));
-		input.BindKeyboardCommand(SDL_SCANCODE_LEFT,  dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1, -1));
+		input.BindKeyboardCommand(SDL_SCANCODE_DOWN, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), +1,  0));
+		input.BindKeyboardCommand(SDL_SCANCODE_LEFT, dae::KeyState::Down, std::make_unique<qbert::JumpCommand>(qbert1Go.get(), -1, -1));
 
 		// Player 2 starts bottom right corner
 		auto qbert2Go = std::make_unique<dae::GameObject>();
@@ -208,7 +205,7 @@ static void loadGame(qbert::gameMode mode)
 		qbert2->m_subject.AddObserver(sam);
 	}
 
-	// Player HUD (top-left): score (orange, arcade-style) above lives (white).
+	// Player HUD (top-left): score 
 	// Each display observes its own Q*bert and refreshes on the matching event;
 	// initial text shows the starting values.
 	auto scoreFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 28);
@@ -240,8 +237,8 @@ static void loadGame(qbert::gameMode mode)
 		scene.Add(std::move(lives2Go));
 	}
 
-	// "CHANGE TO:" indicator: plain-text label + the target swatch sprite, which
-	// follows the pyramid's colour set (so it re-colours each round).
+	// CHANGE TO:indicator: plain-text label + the target swatch sprite, which
+	// follows the pyramid's colour set
 	auto changeToGo = std::make_unique<dae::GameObject>();
 	changeToGo->SetPosition(744.f, 150.f);
 	changeToGo->AddComponent<dae::TextComponent>("CHANGE TO:", smallFont)->SetColor({ 255, 255, 255, 255 });
@@ -257,8 +254,7 @@ static void loadGame(qbert::gameMode mode)
 	gameState->addQbert(qbert1);
 	gameState->addQbert(qbert2);
 
-	// Levels are data-driven: read the table from Data/levels.json (falls back to sane
-	// defaults if the file is missing/invalid) and hand it to the game state. Must come
+	// Levels are data-driven: read the table from Data/levels.json  and hand it to the game state. Must come
 	// after setPyramid so level 1's flip rule/colour can be applied to the pyramid now.
 	auto levels = qbert::loadLevelConfig(dae::ResourceManager::GetInstance().GetDataPath() / "levels.json");
 	gameState->setConfig(std::move(levels));
@@ -266,9 +262,9 @@ static void loadGame(qbert::gameMode mode)
 	// F1 skips straight to the next level (debug/demo shortcut)
 	input.BindKeyboardCommand(SDL_SCANCODE_F1, dae::KeyState::Down, std::make_unique<qbert::SkipLevelCommand>(gameState));
 
-	// Enemy spawner: gates which enemies are active per round and enforces the cap
+	// Enemy spawner:  which enemies are active per round and enforces the cap
 	auto spawnerGo = std::make_unique<dae::GameObject>();
-	auto* spawner = spawnerGo->AddComponent<qbert::enemySpawnerComponent>(gameState, coily, redBall, slick, sam);
+	auto* spawner = spawnerGo->AddComponent<qbert::EnemySpawnerComponent>(gameState, coily, redBall, slick, sam);
 	gameState->m_subject.AddObserver(spawner);
 	slick->m_subject.AddObserver(spawner); // EnemyDied frees the slot
 	sam->m_subject.AddObserver(spawner);

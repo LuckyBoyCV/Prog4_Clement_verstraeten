@@ -15,8 +15,8 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 	m_jumpTime += deltaTime;
 	float t = std::min(m_jumpTime / m_jumpDuration, 1.f);
 
-	glm::vec2 startPos = coily.getPyramid()->GetTileScreenPos(coily.getRow(), coily.getCol());
-	glm::vec2 endPos   = coily.getPyramid()->GetTileScreenPos(m_destRow, m_destCol);
+	glm::vec2 startPos = coily.getPyramid()->getTileScreenPos(coily.getRow(), coily.getCol());
+	glm::vec2 endPos   = coily.getPyramid()->getTileScreenPos(m_destRow, m_destCol);
 
 	// parabolic arc: peaks at t=0.5
 	float arc = -4.f * t * (t - 1.f);
@@ -29,7 +29,7 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 	{
 		// Landed off the pyramid (and not onto a disc) -> Coily was lured over the edge.
 		PyramidComponent* pyramid = coily.getPyramid();
-		if (!pyramid->GetTile(m_destRow, m_destCol) && pyramid->GetDiskIndexAt(m_destRow, m_destCol) < 0)
+		if (!pyramid->getTile(m_destRow, m_destCol) && pyramid->getDiskIndexAt(m_destRow, m_destCol) < 0)
 		{
 			coily.die();        // awards the player and queues Coily's respawn
 			return nullptr;     // die() drives the next state; skip the normal landing

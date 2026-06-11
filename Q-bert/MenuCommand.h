@@ -7,7 +7,7 @@ namespace qbert
 	class MenuNavigateCommand final : public dae::Command
 	{
 	public:
-		MenuNavigateCommand(mainMenuComponent* menu, int direction)
+		MenuNavigateCommand(MainMenuComponent* menu, int direction)
 			: m_menu(menu), m_direction(direction) {}
 
 		void Execute() override
@@ -17,17 +17,17 @@ namespace qbert
 		}
 
 	private:
-		mainMenuComponent* m_menu;
+		MainMenuComponent* m_menu;
 		int m_direction;
 	};
 
 	class MenuConfirmCommand final : public dae::Command
 	{
 	public:
-		explicit MenuConfirmCommand(mainMenuComponent* menu) : m_menu(menu) {}
+		explicit MenuConfirmCommand(MainMenuComponent* menu) : m_menu(menu) {}
 		void Execute() override { m_menu->Confirm(); }
 
 	private:
-		mainMenuComponent* m_menu;
+		MainMenuComponent* m_menu;
 	};
 }

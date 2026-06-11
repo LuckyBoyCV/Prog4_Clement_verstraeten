@@ -32,7 +32,7 @@ namespace qbert
 		// Wiring for round progression (set in loadGame)
 		void setPyramid(PyramidComponent* pyramid) { m_pPyramid = pyramid; }
 		void addQbert(QbertComponent* qbert) { if (qbert) m_qberts.push_back(qbert); }
-		void setConfig(levelConfig config); // installs the level table and applies level 1 (call after setPyramid)
+		void setConfig(LevelConfig config); // installs the level table and applies level 1 (call after setPyramid)
 
 		dae::Subject m_subject;
 
@@ -46,7 +46,7 @@ namespace qbert
 		int m_level{ 1 };
 		bool m_gameOver{ false };
 
-		levelConfig m_config;       // level table from levels.json; level count = m_config.levels.size()
+		LevelConfig m_config;       // level table from levels.json; level count = m_config.levels.size()
 
 		PyramidComponent* m_pPyramid{ nullptr };
 		std::vector<QbertComponent*> m_qberts;

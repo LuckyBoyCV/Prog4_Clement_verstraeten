@@ -23,7 +23,7 @@ std::unique_ptr<qbert::RedBallState> qbert::RedBallMovingState::Update(redBallCo
 	int destRow = ball.getRow() + 1;
 	int destCol = ball.getCol() + (std::rand() % 2);
 
-	if (ball.getPyramid()->GetTile(destRow, destCol) != nullptr)
+	if (ball.getPyramid()->getTile(destRow, destCol) != nullptr)
 	{
 		ball.setFutureRow(destRow);
 		ball.setFutureCol(destCol);
@@ -36,7 +36,7 @@ std::unique_ptr<qbert::RedBallState> qbert::RedBallMovingState::Update(redBallCo
 	ball.setRow(row);
 	ball.setCol(col);
 	ball.setSprite(17, 16, 16, 16);
-	glm::vec2 pos = ball.getPyramid()->GetTileScreenPos(row, col);
+	glm::vec2 pos = ball.getPyramid()->getTileScreenPos(row, col);
 	ball.getOwner()->SetPosition(pos.x + ball.getSpriteOffsetX(), pos.y - ball.getSpriteOffsetY());
 	return std::make_unique<RedBallMovingState>();
 }

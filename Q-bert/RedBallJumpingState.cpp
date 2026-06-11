@@ -10,8 +10,8 @@ std::unique_ptr<qbert::RedBallState> qbert::RedBallJumpingState::Update(redBallC
 	m_jumpTime += deltaTime;
 	float t = std::min(m_jumpTime / ball.getJumpDuration(), 1.f);
 
-	glm::vec2 startPos = ball.getPyramid()->GetTileScreenPos(ball.getRow(), ball.getCol());
-	glm::vec2 endPos   = ball.getPyramid()->GetTileScreenPos(ball.getFutureRow(), ball.getFutureCol());
+	glm::vec2 startPos = ball.getPyramid()->getTileScreenPos(ball.getRow(), ball.getCol());
+	glm::vec2 endPos   = ball.getPyramid()->getTileScreenPos(ball.getFutureRow(), ball.getFutureCol());
 
 	float arc = -4.f * t * (t - 1.f);
 	ball.getOwner()->SetPosition(

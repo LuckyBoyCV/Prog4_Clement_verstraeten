@@ -19,7 +19,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamRespawningState::Update(Sli
 	// Delay elapsed — reappear at the assigned spawn tile
 	slickSam.setRow(m_respawnRow);
 	slickSam.setCol(m_respawnCol);
-	glm::vec2 pos = slickSam.getPyramid()->GetTileScreenPos(m_respawnRow, m_respawnCol);
+	glm::vec2 pos = slickSam.getPyramid()->getTileScreenPos(m_respawnRow, m_respawnCol);
 	slickSam.getOwner()->SetPosition(pos.x + slickSam.getSpriteOffsetX(), pos.y - slickSam.getSpriteOffsetY());
 	return std::make_unique<SlickSamMovingState>();
 }

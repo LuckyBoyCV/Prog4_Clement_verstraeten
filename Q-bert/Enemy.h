@@ -2,7 +2,7 @@
 
 namespace qbert
 {
-	// Activation contract used by enemySpawnerComponent to turn enemies on/off
+	// Activation  used by enemySpawnerComponent to turn enemies on/off
 	// without creating/destroying GameObjects. Inactive enemies park off-screen
 	// and skip their state machine.
 	class Enemy

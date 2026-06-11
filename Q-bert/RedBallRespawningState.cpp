@@ -20,7 +20,7 @@ std::unique_ptr<qbert::RedBallState> qbert::RedBallRespawningState::Update(redBa
 	ball.setRow(m_respawnRow);
 	ball.setCol(m_respawnCol);
 	ball.setSprite(17, 16, 16, 16);
-	glm::vec2 pos = ball.getPyramid()->GetTileScreenPos(m_respawnRow, m_respawnCol);
+	glm::vec2 pos = ball.getPyramid()->getTileScreenPos(m_respawnRow, m_respawnCol);
 	ball.getOwner()->SetPosition(pos.x + ball.getSpriteOffsetX(), pos.y - ball.getSpriteOffsetY());
 	return std::make_unique<RedBallMovingState>();
 }

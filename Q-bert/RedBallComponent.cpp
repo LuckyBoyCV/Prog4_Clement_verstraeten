@@ -23,7 +23,7 @@ void qbert::redBallComponent::activate()
 	m_col = rand() % 2;
 	m_pendingRespawn = false;
 	setSprite(17, 16, 16, 16);
-	glm::vec2 pos = m_pPyramid->GetTileScreenPos(m_row, m_col);
+	glm::vec2 pos = m_pPyramid->getTileScreenPos(m_row, m_col);
 	m_Owner->SetPosition(pos.x + m_spriteOffsetX, pos.y - m_spriteOffsetY);
 
 	m_pState = std::make_unique<RedBallMovingState>();

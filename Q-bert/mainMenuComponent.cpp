@@ -1,7 +1,7 @@
 #include "mainMenuComponent.h"
 #include "TextComponent.h"
 
-qbert::mainMenuComponent::mainMenuComponent(dae::GameObject* pOwner,
+qbert::MainMenuComponent::MainMenuComponent(dae::GameObject* pOwner,
 	std::vector<dae::TextComponent*> items,
 	std::function<void(gameMode)> onSelect)
 	: Component(pOwner)
@@ -11,19 +11,19 @@ qbert::mainMenuComponent::mainMenuComponent(dae::GameObject* pOwner,
 	updateColors();
 }
 
-void qbert::mainMenuComponent::SelectUp()
+void qbert::MainMenuComponent::SelectUp()
 {
 	m_selectedIndex = (m_selectedIndex - 1 + static_cast<int>(m_items.size())) % static_cast<int>(m_items.size());
 	updateColors();
 }
 
-void qbert::mainMenuComponent::SelectDown()
+void qbert::MainMenuComponent::SelectDown()
 {
 	m_selectedIndex = (m_selectedIndex + 1) % static_cast<int>(m_items.size());
 	updateColors();
 }
 
-void qbert::mainMenuComponent::Confirm()
+void qbert::MainMenuComponent::Confirm()
 {
 	gameMode selectedMode;
 	switch (m_selectedIndex)
@@ -36,7 +36,7 @@ void qbert::mainMenuComponent::Confirm()
 	m_onSelect(selectedMode);
 }
 
-void qbert::mainMenuComponent::updateColors()
+void qbert::MainMenuComponent::updateColors()
 {
 	for (int i = 0; i < static_cast<int>(m_items.size()); ++i)
 	{

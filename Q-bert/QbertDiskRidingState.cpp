@@ -12,11 +12,11 @@ qbert::QbertDiskRidingState::QbertDiskRidingState(int diskIndex)
 void qbert::QbertDiskRidingState::onEnter(QbertComponent& qbert)
 {
 	PyramidComponent* pyramid = qbert.getPyramid();
-	const Disk& disk = pyramid->GetDisk(m_diskIndex);
+	const Disk& disk = pyramid->getDisk(m_diskIndex);
 
 	// +30/-30 centres the sprite the same way every other state positions Q*bert.
 	m_startPos = { disk.position.x + 30.f, disk.position.y - 30.f };
-	glm::vec2 apex = pyramid->GetTileScreenPos(0, 0);
+	glm::vec2 apex = pyramid->getTileScreenPos(0, 0);
 	m_apexPos = { apex.x + 30.f, apex.y - 30.f };
 
 	// Report the disc's off-pyramid coord for the whole ride: this is what lures Coily.
@@ -42,11 +42,11 @@ std::unique_ptr<qbert::QbertState> qbert::QbertDiskRidingState::Update(QbertComp
 		qbert.getOwner()->SetPosition(m_apexPos.x, m_apexPos.y);
 
 		PyramidComponent* pyramid = qbert.getPyramid();
-		if (Tile* apex = pyramid->GetTile(0, 0))
-			if (pyramid->StepOn(*apex))
+		if (Tile* apex = pyramid->getTile(0, 0))
+			if (pyramid->stepOn(*apex))
 				qbert.addScore(25);
 
-		pyramid->ConsumeDisk(m_diskIndex);
+		pyramid->consumeDisk(m_diskIndex);
 		return std::make_unique<QbertIdleState>();
 	}
 

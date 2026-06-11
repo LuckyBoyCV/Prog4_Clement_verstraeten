@@ -31,7 +31,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSa
 	int destRow = slickSam.getRow() + 1;
 	int destCol = slickSam.getCol() + (std::rand() % 2);
 
-	if (slickSam.getPyramid()->GetTile(destRow, destCol) != nullptr)
+	if (slickSam.getPyramid()->getTile(destRow, destCol) != nullptr)
 	{
 		slickSam.setFutureRow(destRow);
 		slickSam.setFutureCol(destCol);
@@ -43,7 +43,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSa
 	const int col = std::rand() % 2;
 	slickSam.setRow(row);
 	slickSam.setCol(col);
-	glm::vec2 pos = slickSam.getPyramid()->GetTileScreenPos(row, col);
+	glm::vec2 pos = slickSam.getPyramid()->getTileScreenPos(row, col);
 	slickSam.getOwner()->SetPosition(pos.x + slickSam.getSpriteOffsetX(), pos.y - slickSam.getSpriteOffsetY());
 	return std::make_unique<SlickSamMovingState>();
 }

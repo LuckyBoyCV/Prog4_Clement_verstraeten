@@ -11,8 +11,8 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamJumpingState::Update(SlickS
 	m_jumpTime += deltaTime;
 	float t = std::min(m_jumpTime / slickSam.getJumpDuration(), 1.f);
 
-	glm::vec2 startPos = slickSam.getPyramid()->GetTileScreenPos(slickSam.getRow(), slickSam.getCol());
-	glm::vec2 endPos   = slickSam.getPyramid()->GetTileScreenPos(slickSam.getFutureRow(), slickSam.getFutureCol());
+	glm::vec2 startPos = slickSam.getPyramid()->getTileScreenPos(slickSam.getRow(), slickSam.getCol());
+	glm::vec2 endPos   = slickSam.getPyramid()->getTileScreenPos(slickSam.getFutureRow(), slickSam.getFutureCol());
 
 	float arc = -4.f * t * (t - 1.f);
 	slickSam.getOwner()->SetPosition(

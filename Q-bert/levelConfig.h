@@ -15,7 +15,7 @@ namespace qbert
 	};
 
 	// The whole level table. The number of levels is simply levels.size().
-	struct levelConfig
+	struct LevelConfig
 	{
 		int                    roundsPerLevel{ 4 };
 		std::vector<levelData> levels;
@@ -24,5 +24,5 @@ namespace qbert
 	// Reads the level table from jsonPath. On a missing or malformed file it logs and returns
 	// the built-in default (the classic 3-level layout), so the game always has at least one
 	// valid level and never crashes on bad data.
-	levelConfig loadLevelConfig(const std::filesystem::path& jsonPath);
+	LevelConfig loadLevelConfig(const std::filesystem::path& jsonPath);
 }

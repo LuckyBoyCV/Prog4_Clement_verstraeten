@@ -32,7 +32,7 @@ void qbert::CoilyComponent::activate()
 	m_pState = std::make_unique<CoilyEggState>();
 	m_pState->onEnter(*this);
 
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
+	if (auto* tile = m_pPyramid->getTile(m_row, m_col))
 		m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y + m_spriteOffsetY);
 
 	m_active = true;
@@ -161,6 +161,6 @@ void qbert::CoilyComponent::SetState(std::unique_ptr<CoilyState> newState)
 
 void qbert::CoilyComponent::SnapToCurrentTile()
 {
-	if (auto* tile = m_pPyramid->GetTile(m_row, m_col))
+	if (auto* tile = m_pPyramid->getTile(m_row, m_col))
 		m_Owner->SetPosition(tile->position.x + 30.f, tile->position.y + m_spriteOffsetY);
 }

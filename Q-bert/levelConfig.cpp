@@ -18,9 +18,9 @@ namespace
 
 	// Built-in fallback used when the file is missing or invalid. Mirrors the game's
 	// original hardcoded behaviour: 3 levels, 4 rounds each, random colours.
-	qbert::levelConfig DefaultConfig()
+	qbert::LevelConfig DefaultConfig()
 	{
-		qbert::levelConfig config;
+		qbert::LevelConfig config;
 		config.roundsPerLevel = 4;
 		config.levels = {
 			{ TileType::normal,  -1 },
@@ -31,7 +31,7 @@ namespace
 	}
 }
 
-qbert::levelConfig qbert::loadLevelConfig(const std::filesystem::path& jsonPath)
+qbert::LevelConfig qbert::loadLevelConfig(const std::filesystem::path& jsonPath)
 {
 	std::ifstream file(jsonPath);
 	if (!file.is_open())
@@ -45,7 +45,7 @@ qbert::levelConfig qbert::loadLevelConfig(const std::filesystem::path& jsonPath)
 	{
 		const nlohmann::json root = nlohmann::json::parse(file);
 
-		levelConfig config;
+		LevelConfig config;
 		config.roundsPerLevel = root.value("roundsPerLevel", 4);
 		if (config.roundsPerLevel < 1)
 			config.roundsPerLevel = 1;

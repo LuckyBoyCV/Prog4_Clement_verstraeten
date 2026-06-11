@@ -64,9 +64,9 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/SlickSamRespawningState.cpp
   Q-bert/CoilyPlayerState.cpp
   Q-bert/CoilyJumpCommand.cpp
-  Q-bert/mainMenuComponent.cpp
-  Q-bert/enemySpawnerComponent.cpp
-  Q-bert/levelConfig.cpp
+  Q-bert/MainMenuComponent.cpp
+  Q-bert/EnemySpawnerComponent.cpp
+  "Q-bert/LevelConfig.cpp"
 )
 
 
