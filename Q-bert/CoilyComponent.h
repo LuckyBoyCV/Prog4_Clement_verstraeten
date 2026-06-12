@@ -24,7 +24,7 @@ namespace qbert
 
 		void Update(float deltaTime) override;
 
-		// Enemy activation contract
+		// Enemy activation 
 		void activate() override;
 		void deactivate() override;
 		bool isActive() const override { return m_active; }
@@ -54,7 +54,7 @@ namespace qbert
 		float             getSpriteOffsetY() const { return m_spriteOffsetY; }
 
 		void onTile();
-		void die();   // lured off the edge: award the player and queue a respawn
+		void die();   // lured off the edge  award the player and queue a respawn
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
 
 	private:
@@ -72,13 +72,13 @@ namespace qbert
 		bool  m_qbertWasJumping{ false };
 		bool  m_active{ false };
 
-		// Set by OnNotify; flushed at the start of the next Update to avoid mid-frame state changes
+		// Set by OnNotify flushed at the start of the next Update to avoid mid-frame state changes
 		bool  m_pendingRespawn{ false };
 		float m_respawnDelay{ 0.f };
 		int   m_respawnRow{ 0 };
 		int   m_respawnCol{ 0 };
 
-		// Set by Move() from CoilyJumpCommand; flushed the same way
+		// Set by Move() from CoilyJumpCommand flushed the same way
 		bool m_pendingJump{ false };
 		int  m_pendingJumpRow{ 0 };
 		int  m_pendingJumpCol{ 0 };

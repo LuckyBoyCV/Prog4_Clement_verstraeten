@@ -8,7 +8,7 @@
 
 std::unique_ptr<qbert::RedBallState> qbert::RedBallMovingState::Update(redBallComponent& ball, float deltaTime)
 {
-	// Edge-detect Q-bert landing on our tile
+	// Edge-detect qbert landing on our tile
 	bool qbertJustLanded = m_qbertWasJumping && !ball.getQbert()->isJumping();
 	m_qbertWasJumping = ball.getQbert()->isJumping();
 	if (qbertJustLanded && ball.getQbert()->getRow() == ball.getRow() && ball.getQbert()->getCol() == ball.getCol())

@@ -10,6 +10,11 @@ namespace dae
     public:
         void Play(sound_id, float) override {}
         sound_id RegisterSound(const std::string&) override { return 0; }
+        void SetMuted(bool muted) override { m_muted = muted; }
+        bool IsMuted() const override { return m_muted; }
+
+    private:
+        bool m_muted{ false };
     };
 
     class ServiceLocator final

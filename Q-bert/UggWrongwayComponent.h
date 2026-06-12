@@ -14,7 +14,7 @@ namespace qbert
 	enum class UggWrongwaySide { left, right };
 
 
-	// ugg climbs the right edge, Wrongway the left.contact kills Q*bert
+	// ugg climbs the right edge, Wrongway the left.contact kills qbert
 
 	class UggWrongwayComponent final : public dae::Component, public dae::Observer, public Enemy
 	{
@@ -35,7 +35,7 @@ namespace qbert
 
 		bool isJumping() const;
 
-		// Called by JumpingState after landing; kills Q*bert if he shares this tile (no tile flipping)
+		// Called by JumpingState after landing; kills qbert if he shares this tile (no tile flipping)
 		void onTile();
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
 

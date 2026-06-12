@@ -4,7 +4,7 @@
 
 namespace qbert
 {
-	// Q-bert fell off the pyramid — plays fall animation then triggers respawn
+	// qbert fell off the pyramid — plays fall animation then triggers respawn
 	class QbertFallingState final : public QbertState
 	{
 	public:

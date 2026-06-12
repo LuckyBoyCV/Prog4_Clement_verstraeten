@@ -30,7 +30,7 @@ namespace qbert
 
 		bool isJumping() const;
 
-		// Called by JumpingState after landing; reverses the tile and returns true if Q-bert was on it
+		// Called by JumpingState after landing; reverses the tile and returns true if qbert was on it
 		bool onTile();
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
 

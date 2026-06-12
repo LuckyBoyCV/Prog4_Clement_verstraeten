@@ -12,6 +12,8 @@
 #include "TextComponent.h"
 #include "RenderComponent.h"
 #include "InputManager.h"
+#include "ServiceLocator.h"
+#include "SDLSoundSystem.h"
 #include "../Q-bert/PyramidComponent.h"
 #include "../Q-bert/QbertComponent.h"
 #include "../Q-bert/JumpCommand.h"
@@ -27,12 +29,18 @@
 #include "../Q-bert/UggWrongwayComponent.h"
 #include "../Q-bert/mainMenuComponent.h"
 #include "../Q-bert/MenuCommand.h"
+#include "../Q-bert/MuteCommand.h"
 #include "../Q-bert/SkipLevelCommand.h"
 #include "../Q-bert/coilyJumpCommand.h"
 #include "../Q-bert/gameMode.h"
 #include "../Q-bert/Enemy.h"
 #include "../Q-bert/enemySpawnerComponent.h"
 #include "../Q-bert/levelConfig.h"
+#include "../Q-bert/gameOverComponent.h"
+#include "../Q-bert/scoreEntryComponent.h"
+#include "../Q-bert/scoreEntryCommand.h"
+#include "../Q-bert/highScores.h"
+#include "../Q-bert/soundComponent.h"
 
 #include <filesystem>
 #include <cstdlib>
@@ -41,6 +49,11 @@
 namespace fs = std::filesystem;
 
 static void loadGame(qbert::gameMode mode);
+static void loadGameOver(int score);
+
+// sound ids registered once at startup, read when wiring the in game sound observer
+static dae::sound_id s_jumpSound{};
+static dae::sound_id s_deathSound{};
 
 static void loadMenu()
 {
@@ -92,6 +105,9 @@ static void loadMenu()
 	input.BindControllerCommand(0, dae::Controller::button::DpadUp, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, -1));
 	input.BindControllerCommand(0, dae::Controller::button::DpadDown, dae::KeyState::Down, std::make_unique<qbert::MenuNavigateCommand>(menuComp, +1));
 	input.BindControllerCommand(0, dae::Controller::button::ButtonA, dae::KeyState::Down, std::make_unique<qbert::MenuConfirmCommand>(menuComp));
+
+	// F2 toggles mute
+	input.BindKeyboardCommand(SDL_SCANCODE_F2, dae::KeyState::Down, std::make_unique<qbert::MuteCommand>());
 }
 
 static void loadGame(qbert::gameMode mode)
@@ -221,7 +237,7 @@ static void loadGame(qbert::gameMode mode)
 	auto* sam = samGo->AddComponent<qbert::SlickSamComponent>(pyramid, qbert1);
 	scene.Add(std::move(samGo));
 
-	// Ugg climbs the right edge of the pyramid upward, lethal to Q*bert on contact
+	// Ugg climbs the right edge of the pyramid upward, lethal to qbert on contact
 	auto uggGo = std::make_unique<dae::GameObject>();
 	auto* uggRender = uggGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
 	uggRender->SetSourceRect(82, 97, 12, 18);   // estimated purple Ugg frame, tweak to pixel fit
@@ -229,7 +245,7 @@ static void loadGame(qbert::gameMode mode)
 	auto* ugg = uggGo->AddComponent<qbert::UggWrongwayComponent>(pyramid, qbert1, qbert::UggWrongwaySide::right);
 	scene.Add(std::move(uggGo));
 
-	// Wrongway climbs the left edge of the pyramid upward, lethal to Q*bert on contact
+	// Wrongway climbs the left edge of the pyramid upward, lethal to qbert on contact
 	auto wrongwayGo = std::make_unique<dae::GameObject>();
 	auto* wrongwayRender = wrongwayGo->AddComponent<dae::RenderComponent>("sprites_Qbert.png");
 	wrongwayRender->SetSourceRect(82, 112, 12, 18); // estimated purple Wrongway frame, tweak to pixel fit
@@ -255,8 +271,16 @@ static void loadGame(qbert::gameMode mode)
 		qbert2->m_subject.AddObserver(wrongway);
 	}
 
-	// Player HUD (top-left): score 
-	// Each display observes its own Q*bert and refreshes on the matching event;
+	// Sound: one observer plays jump.wav on a move and death.wav on a death for either player
+	auto soundGo = std::make_unique<dae::GameObject>();
+	auto* sound = soundGo->AddComponent<qbert::SoundComponent>(s_jumpSound, s_deathSound, 1.f);
+	qbert1->m_subject.AddObserver(sound);
+	if (qbert2)
+		qbert2->m_subject.AddObserver(sound);
+	scene.Add(std::move(soundGo));
+
+	// Player HUD (top-left): score
+	// Each display observes its own qbert and refreshes on the matching event;
 	// initial text shows the starting values.
 	auto scoreFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 28);
 
@@ -312,6 +336,9 @@ static void loadGame(qbert::gameMode mode)
 	// F1 skips straight to the next level (debug/demo shortcut)
 	input.BindKeyboardCommand(SDL_SCANCODE_F1, dae::KeyState::Down, std::make_unique<qbert::SkipLevelCommand>(gameState));
 
+	// F2 toggles mute
+	input.BindKeyboardCommand(SDL_SCANCODE_F2, dae::KeyState::Down, std::make_unique<qbert::MuteCommand>());
+
 	// Enemy spawner:  which enemies are active per round and enforces the cap
 	auto spawnerGo = std::make_unique<dae::GameObject>();
 	auto* spawner = spawnerGo->AddComponent<qbert::EnemySpawnerComponent>(gameState, coily, redBall, slick, sam, ugg, wrongway);
@@ -319,6 +346,18 @@ static void loadGame(qbert::gameMode mode)
 	slick->m_subject.AddObserver(spawner); // EnemyDied frees the slot
 	sam->m_subject.AddObserver(spawner);
 	scene.Add(std::move(spawnerGo));
+
+	// Game over watcher: the first GameOver from either player or the game state grabs the top
+	// score and brings up the arcade name entry screen
+	auto gameOverGo = std::make_unique<dae::GameObject>();
+	std::vector<qbert::QbertComponent*> humans;
+	if (qbert1) humans.push_back(qbert1);
+	if (qbert2) humans.push_back(qbert2);
+	auto* gameOver = gameOverGo->AddComponent<qbert::gameOverComponent>(humans, loadGameOver);
+	if (qbert1) qbert1->m_subject.AddObserver(gameOver);
+	if (qbert2) qbert2->m_subject.AddObserver(gameOver);
+	gameState->m_subject.AddObserver(gameOver);
+	scene.Add(std::move(gameOverGo));
 
 	auto levelLabelGo = std::make_unique<dae::GameObject>();
 	levelLabelGo->SetPosition(840.f, 50.f);
@@ -350,6 +389,95 @@ static void loadGame(qbert::gameMode mode)
 	sceneManager.SetActiveScene(1);
 }
 
+static void loadGameOver(int score)
+{
+	auto& sceneManager = dae::SceneManager::GetInstance();
+	auto& input = dae::InputManager::GetInstance();
+	input.ClearAllBindings();
+
+	auto& scene = sceneManager.CreateScene();
+
+	auto bigFont   = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 52);
+	auto midFont   = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 30);
+	auto smallFont = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+
+	const auto csvPath = dae::ResourceManager::GetInstance().GetDataPath() / "highscores.csv";
+
+	auto titleGo = std::make_unique<dae::GameObject>();
+	titleGo->SetPosition(330.f, 40.f);
+	titleGo->AddComponent<dae::TextComponent>("GAME OVER", bigFont)->SetColor({ 255, 50, 50, 255 });
+	scene.Add(std::move(titleGo));
+
+	auto scoreGo = std::make_unique<dae::GameObject>();
+	scoreGo->SetPosition(420.f, 110.f);
+	scoreGo->AddComponent<dae::TextComponent>("SCORE: " + std::to_string(score), midFont)->SetColor({ 255, 255, 255, 255 });
+	scene.Add(std::move(scoreGo));
+
+	auto promptGo = std::make_unique<dae::GameObject>();
+	promptGo->SetPosition(385.f, 165.f);
+	promptGo->AddComponent<dae::TextComponent>("ENTER YOUR INITIALS", smallFont)->SetColor({ 255, 165, 0, 255 });
+	scene.Add(std::move(promptGo));
+
+	// three letter slots, the entry component drives their text and colour
+	std::vector<dae::TextComponent*> slots;
+	for (int i = 0; i < 3; ++i)
+	{
+		auto slotGo = std::make_unique<dae::GameObject>();
+		slotGo->SetPosition(450.f + 55.f * static_cast<float>(i), 200.f);
+		slots.push_back(slotGo->AddComponent<dae::TextComponent>("A", bigFont));
+		scene.Add(std::move(slotGo));
+	}
+
+	auto headingGo = std::make_unique<dae::GameObject>();
+	headingGo->SetPosition(420.f, 320.f);
+	headingGo->AddComponent<dae::TextComponent>("HIGH SCORES", midFont)->SetColor({ 255, 255, 255, 255 });
+	scene.Add(std::move(headingGo));
+
+	std::vector<dae::TextComponent*> rows;
+	for (int i = 0; i < qbert::maxHighScores; ++i)
+	{
+		auto rowGo = std::make_unique<dae::GameObject>();
+		rowGo->SetPosition(420.f, 360.f + 20.f * static_cast<float>(i));
+		rows.push_back(rowGo->AddComponent<dae::TextComponent>("", smallFont));
+		scene.Add(std::move(rowGo));
+	}
+
+	auto fillRows = [rows, csvPath]()
+	{
+		const auto entries = qbert::loadHighScores(csvPath);
+		for (size_t i = 0; i < rows.size(); ++i)
+		{
+			if (i < entries.size())
+				rows[i]->SetText(std::to_string(i + 1) + ".  " + entries[i].name + "   " + std::to_string(entries[i].score));
+			else
+				rows[i]->SetText("");
+		}
+	};
+	fillRows();
+
+	auto entryGo = std::make_unique<dae::GameObject>();
+	auto* entry = entryGo->AddComponent<qbert::ScoreEntryComponent>(slots, score, csvPath, fillRows);
+	scene.Add(std::move(entryGo));
+
+	input.BindKeyboardCommand(SDL_SCANCODE_UP,    dae::KeyState::Down, std::make_unique<qbert::letterCycleCommand>(entry, +1));
+	input.BindKeyboardCommand(SDL_SCANCODE_DOWN,  dae::KeyState::Down, std::make_unique<qbert::letterCycleCommand>(entry, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_LEFT,  dae::KeyState::Down, std::make_unique<qbert::slotMoveCommand>(entry, -1));
+	input.BindKeyboardCommand(SDL_SCANCODE_RIGHT, dae::KeyState::Down, std::make_unique<qbert::slotMoveCommand>(entry, +1));
+	input.BindKeyboardCommand(SDL_SCANCODE_RETURN, dae::KeyState::Down, std::make_unique<qbert::submitCommand>(entry));
+
+	// Controller 0 drives entry too: D-pad up/down cycles the letter, left/right moves slot, A submits
+	input.BindControllerCommand(0, dae::Controller::button::DpadUp,    dae::KeyState::Down, std::make_unique<qbert::letterCycleCommand>(entry, +1));
+	input.BindControllerCommand(0, dae::Controller::button::DpadDown,  dae::KeyState::Down, std::make_unique<qbert::letterCycleCommand>(entry, -1));
+	input.BindControllerCommand(0, dae::Controller::button::DpadLeft,  dae::KeyState::Down, std::make_unique<qbert::slotMoveCommand>(entry, -1));
+	input.BindControllerCommand(0, dae::Controller::button::DpadRight, dae::KeyState::Down, std::make_unique<qbert::slotMoveCommand>(entry, +1));
+	input.BindControllerCommand(0, dae::Controller::button::ButtonA,   dae::KeyState::Down, std::make_unique<qbert::submitCommand>(entry));
+
+	// F2 toggles mute
+	input.BindKeyboardCommand(SDL_SCANCODE_F2, dae::KeyState::Down, std::make_unique<qbert::MuteCommand>());
+
+	sceneManager.SetActiveScene(2);
+}
+
 static void load()
 {
 	loadMenu();
@@ -366,6 +494,16 @@ int main(int, char* [])
 		data_location = "../Data/";
 #endif
 	dae::Minigin engine(data_location);
+
+	auto soundSystem = std::make_unique<dae::SDLSoundSystem>();
+	const auto dataPath = dae::ResourceManager::GetInstance().GetDataPath();
+	s_jumpSound  = soundSystem->RegisterSound((dataPath / "jump.wav").string());
+	s_deathSound = soundSystem->RegisterSound((dataPath / "death.wav").string());
+	dae::ServiceLocator::RegisterSoundSystem(std::move(soundSystem));
+
 	engine.Run(load);
+
+	// tear the sound system down while SDL is still alive since the engine dtor calls SDL_Quit
+	dae::ServiceLocator::RegisterSoundSystem(nullptr);
 	return 0;
 }

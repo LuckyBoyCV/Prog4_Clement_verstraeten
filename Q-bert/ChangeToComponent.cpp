@@ -18,7 +18,7 @@ void qbert::ChangeToComponent::Render()
 	//null safety. If pyramid is null use default color
 	const int colorSet = m_pPyramid ? m_pPyramid->getColorSet() : 0;
 
-	// Show the tile's *final* target colour. Levels 1 and 3 finish on the visited
+	// Show the tile's final target colour. Levels 1 and 3 finish on the visited
 	// colour; level 2 needs two hops, so its swatch is the visitedTwice row (one
 	// state lower on the sheet) rather than the intermediate single-hop colour.
 	float srcY = swatchY;
@@ -28,7 +28,7 @@ void qbert::ChangeToComponent::Render()
 	const SDL_FRect srcRect{ static_cast<float>(swatchBaseX + colorSet * swatchStride),
 						 srcY, swatchW, swatchH };
 
-	// Drawn just below the "CHANGE TO:" text label that shares this GameObject.
+	// Drawn just below the "CHANGE TO:" text 
 	const glm::vec3 pos = m_Owner->GetWorldPosition();
 	constexpr float scale = 4.f;
 	const SDL_FRect dst{ pos.x, pos.y + 28.f, swatchW * scale, swatchH * scale };

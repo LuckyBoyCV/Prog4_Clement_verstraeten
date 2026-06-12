@@ -3,7 +3,7 @@
 
 namespace qbert
 {
-	// Ugg/Wrongway is on a tile: checks for Q*bert collision, then climbs one tile up its edge on an interval
+	// Ugg/Wrongway is on a tile: checks for qbert collision, then climbs one tile up its edge on an interval
 	class UggWrongwayMovingState final : public UggWrongwayState
 	{
 	public:

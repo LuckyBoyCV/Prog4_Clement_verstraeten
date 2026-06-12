@@ -23,6 +23,8 @@ void qbert::GameStateComponent::Update(float)
 	// the pyramid so IsStepped() is false again next frame (no double-trigger).
 	if (m_pPyramid && m_pPyramid->isStepped())
 	{
+		awardDiskBonus(); // 50 per unused disc, counted before refreshBoard rebuilds them
+
 		if (m_round >= m_config.roundsPerLevel)
 		{
 			if (m_level >= static_cast<int>(m_config.levels.size()))
@@ -100,6 +102,18 @@ void qbert::GameStateComponent::refreshBoard()
 	}
 }
 
+void qbert::GameStateComponent::awardDiskBonus()
+{
+	// Each disc the player never rode is worth 50 at stage end. The score goes through the
+	// player so its display updates, same as every other points source.
+	if (m_qberts.empty())
+		return;
+
+	const int bonus = m_pPyramid->getActiveDiskCount() * 50;
+	if (bonus > 0)
+		m_qberts.front()->addScore(bonus);
+}
+
 void qbert::GameStateComponent::endGame()
 {
 	m_gameOver = true;
@@ -127,7 +141,7 @@ void qbert::GameStateComponent::applyCurrentLevel()
 
 const qbert::levelData& qbert::GameStateComponent::currentLevel() const
 {
-	// m_level is 1-based; clamp so a short or malformed level table can never index out of bounds.
+	// m_level is 1 based clamp so a short or malformed level table can never index out of bounds.
 	static const levelData fallback{};
 	if (m_config.levels.empty())
 		return fallback;

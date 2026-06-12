@@ -13,7 +13,7 @@ namespace qbert
 		void Execute() override
 		{
 			if (m_direction < 0) m_menu->SelectUp();
-			else                 m_menu->SelectDown();
+			else m_menu->SelectDown();
 		}
 
 	private:

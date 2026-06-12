@@ -10,7 +10,7 @@
 
 std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSamComponent& slickSam, float deltaTime)
 {
-	// Edge-detect Q-bert landing on our tile (Slick/Sam dies, Q-bert is unharmed)
+	// Edge-detect qbert landing on our tile (Slick/Sam dies, qbert is unharmed)
 	bool qbertJustLanded = m_qbertWasJumping && !slickSam.getQbert()->isJumping();
 	m_qbertWasJumping = slickSam.getQbert()->isJumping();
 	if (qbertJustLanded
@@ -18,6 +18,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamMovingState::Update(SlickSa
 		&& slickSam.getQbert()->getCol() == slickSam.getCol())
 	{
 		slickSam.m_subject.Notify(dae::GameEvent::EnemyDied, slickSam.getOwner());
+		slickSam.getQbert()->addScore(300); // caught Slick/Sam
 		slickSam.getOwner()->SetPosition(-1000.f, -1000.f);
 		return std::make_unique<SlickSamRespawningState>(slickSam.getRespawnDuration(), 1, std::rand() % 2);
 	}

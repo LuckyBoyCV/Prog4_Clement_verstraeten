@@ -4,7 +4,7 @@
 
 namespace qbert
 {
-	// F1: jump straight to the next level (debug/demo shortcut).
+	// F1: jump straight to the next level 
 	class SkipLevelCommand final : public dae::Command
 	{
 	public:

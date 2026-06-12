@@ -7,7 +7,7 @@
 
 std::unique_ptr<qbert::UggWrongwayState> qbert::UggWrongwayMovingState::Update(UggWrongwayComponent& uggWrongway, float deltaTime)
 {
-	// Edge detect Q*bert landing on our tile, contact costs him a life and we stay unharmed
+	// Edge detect qbert landing on our tile, contact costs him a life and we stay unharmed
 	bool qbertJustLanded = m_qbertWasJumping && !uggWrongway.getQbert()->isJumping();
 	m_qbertWasJumping = uggWrongway.getQbert()->isJumping();
 	if (qbertJustLanded

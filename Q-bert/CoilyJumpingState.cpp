@@ -18,7 +18,7 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 	glm::vec2 startPos = coily.getPyramid()->getTileScreenPos(coily.getRow(), coily.getCol());
 	glm::vec2 endPos   = coily.getPyramid()->getTileScreenPos(m_destRow, m_destCol);
 
-	// parabolic arc: peaks at t=0.5
+	// parabolic arc peaks at t=0.5
 	float arc = -4.f * t * (t - 1.f);
 	coily.getOwner()->SetPosition(
 		startPos.x + (endPos.x - startPos.x) * t + 30.f,
@@ -27,7 +27,7 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 
 	if (t >= 1.f)
 	{
-		// Landed off the pyramid (and not onto a disc) -> Coily was lured over the edge.
+		// Landed off the pyramid Coily was lured over the edge.
 		PyramidComponent* pyramid = coily.getPyramid();
 		if (!pyramid->getTile(m_destRow, m_destCol) && pyramid->getDiskIndexAt(m_destRow, m_destCol) < 0)
 		{
@@ -37,7 +37,7 @@ std::unique_ptr<qbert::CoilyState> qbert::CoilyJumpingState::Update(CoilyCompone
 
 		coily.setRow(m_destRow);
 		coily.setCol(m_destCol);
-		coily.onTile(); // kill Q*bert if they share a tile
+		coily.onTile(); // kill qbert if they share a tile
 		return std::move(m_afterLand);
 	}
 

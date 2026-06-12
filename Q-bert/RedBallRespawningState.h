@@ -12,7 +12,7 @@ namespace qbert
 	private:
 		float m_timer{ 0.f };
 		float m_delay;
-		int   m_respawnRow;
-		int   m_respawnCol;
+		int m_respawnRow;
+		int m_respawnCol;
 	};
 }

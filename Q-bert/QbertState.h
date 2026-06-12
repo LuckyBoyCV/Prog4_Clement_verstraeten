@@ -5,7 +5,7 @@ namespace qbert
 {
 	class QbertComponent;
 
-	// Abstract base for all Q-bert player states
+	// Abstract base for all qbert player states
 	class QbertState
 	{
 	public:

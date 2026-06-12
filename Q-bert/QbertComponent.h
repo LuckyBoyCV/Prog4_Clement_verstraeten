@@ -43,10 +43,10 @@ namespace qbert
 		void setRow(int r) { m_row = r; }
 		void setCol(int c) { m_col = c; }
 
-		PyramidComponent*  getPyramid()      const { return m_pPyramid; }
-		dae::GameObject*   getOwner()        const { return m_Owner; }
-		float              getJumpDuration() const { return m_jumpDuration; }
-		float              getRespawnDuration() const { return m_respawnDuration; }
+		PyramidComponent* getPyramid() const { return m_pPyramid; }
+		dae::GameObject* getOwner()        const { return m_Owner; }
+		float getJumpDuration() const { return m_jumpDuration; }
+		float getRespawnDuration() const { return m_respawnDuration; }
 
 		dae::Subject m_subject;
 

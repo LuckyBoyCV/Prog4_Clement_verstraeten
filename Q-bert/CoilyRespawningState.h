@@ -3,7 +3,7 @@
 
 namespace qbert
 {
-	// Coily is off-screen waiting to re-enter; spawns as egg when the delay runs out
+	// Coily is off-screen waiting to re-enter spawns as egg when the delay runs out
 	class CoilyRespawningState final : public CoilyState
 	{
 	public:

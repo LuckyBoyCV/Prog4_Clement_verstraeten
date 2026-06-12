@@ -26,7 +26,7 @@ std::unique_ptr<qbert::UggWrongwayState> qbert::UggWrongwayJumpingState::Update(
 		uggWrongway.setCol(uggWrongway.getFutureCol());
 		uggWrongway.getOwner()->SetPosition(endPos.x + uggWrongway.getSpriteOffsetX(), endPos.y - uggWrongway.getSpriteOffsetY());
 
-		// onTile kills Q*bert if he shares this tile, Ugg/Wrongway never flip tiles
+		// onTile kills qbert if he shares this tile, Ugg/Wrongway never flip tiles
 		uggWrongway.onTile();
 		return std::make_unique<UggWrongwayMovingState>();
 	}

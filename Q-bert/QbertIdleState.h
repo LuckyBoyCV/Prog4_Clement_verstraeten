@@ -3,7 +3,7 @@
 
 namespace qbert
 {
-	// Q-bert is standing on a tile, waiting for jump input
+	// qbert is standing on a tile, waiting for jump input
 	class QbertIdleState final : public QbertState
 	{
 	public:

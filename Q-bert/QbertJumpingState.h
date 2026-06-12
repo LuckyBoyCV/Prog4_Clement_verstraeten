@@ -3,7 +3,7 @@
 
 namespace qbert
 {
-	// Q-bert is mid-air, playing the arc jump animation
+	// qbert is mid-air, playing the arc jump animation
 	class QbertJumpingState final : public QbertState
 	{
 	public:

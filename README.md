@@ -1,88 +1,73 @@
-﻿# Minigin
+# Prog 4 Exam Project: Q*bert
 
-Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](https://github.com/g-truc/glm) for 2D c++ game projects. It is in no way a game engine, only a barebone start project where everything sdl related has been set up. It contains glm for vector math, to aleviate the need to write custom vector and matrix classes.
+This repository contains my Programming 4 exam project: a C++ remake of **Q*bert** built on top of the Minigin framework.
 
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/cmake.yml/badge.svg)](https://github.com/LuckyBoyCV/cmake/actions)
-[![Build Status](https://github.com/avadae/minigin/actions/workflows/emscripten.yml/badge.svg)](https://github.com/LuckyBoyCV/emscripten/actions)
-[![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/LuckyBoyCV/minigin/releases/latest)
+The goal of the game is to jump over all pyramid tiles and change them to the target color while avoiding enemies. The project includes single player, co-op, versus mode, level progression, score/lives UI, high scores, sound, keyboard input, and controller support.
 
-# Goal
+## Features
 
-Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
+- Q*bert pyramid gameplay with tile color changes.
+- Three game modes:
+  - Single Player
+  - Co-op
+  - Versus, where player 2 controls Coily
+- Data-driven level rules from `Data/levels.json`.
+- Round and level progression.
+- Score, lives, round, and level displays.
+- Game over screen with initials entry and high-score list.
+- Keyboard and controller support.
+- Web/Emscripten build support from the original Minigin setup.
 
-# Disclaimer
+## Enemies
 
-Minigin is, despite perhaps the suggestion in its name, **not** a game engine. It is just a very simple SDL3 ready project with some of the scaffolding in place to get started. None of the patterns discussed in the course are used yet (except singleton which use we challenge during the course). It is up to the students to implement their own vision for their engine, apply patterns as they see fit, create their game as efficient as possible.
+The game contains the main Q*bert enemies and hazards:
 
-# Use
+- **Coily**  
+  Starts as an egg, hatches into a snake, and chases Q*bert. In versus mode Coily can be controlled by player 2.
 
-Get the source from this project, or since students need to have their work on github too, they can use this repository as a template. Hit the "Use this template" button on the top right corner of the github page of this project.
+- **Red Ball**  
+  Drops down the pyramid and kills Q*bert on contact.
 
-## Windows version
+- **Slick and Sam**  
+  Move down the pyramid and reverse tile progress. Q*bert can stop them by landing on the same tile.
 
-Either
-- Open the root folder in Visual Studio 2026; this will be recognized as a cmake project.
-  
-Or
-- Install CMake 
-- Install CMake and CMake Tools extensions in Visual Code
-- Open the root folder in Visual Code,  this will be recognized as a cmake project.
+- **Ugg and Wrongway**  
+  Climb along the sides of the pyramid and act as hazards.
 
-Or
-- Use whatever editor you like :)
+Enemies are spawned and rotated by `EnemySpawnerComponent`. More enemy types become active in later rounds, so the difficulty increases as the player progresses.
 
-## Emscripten (web) version
+## Patterns Used
 
-### On windows
+This project uses several game programming patterns:
 
-For installing all of the needed tools on Windows I recommend using [Chocolatey](https://chocolatey.org/). You can then run the following in a terminal to install what is needed:
+- **Component Pattern**  
+  Game objects are built from components such as render, text, Q*bert, enemy, HUD, and game-state components.
 
-    choco install -y cmake
-    choco install -y emscripten
-    choco install -y ninja
-    choco install -y python
+- **Command Pattern**  
+  Keyboard and controller input are mapped to command objects, such as jump commands, menu commands, skip-level commands, and score-entry commands.
 
-In a terminal, navigate to the root folder. Run this: 
+- **State Pattern**  
+  Q*bert and the enemies use states for behavior like idle, jumping, falling, respawning, moving, egg mode, snake mode, and player-controlled Coily.
 
-    mkdir build_web
-    cd build_web
-    emcmake cmake ..
-    emmake ninja
+- **Observer Pattern**  
+  Subjects notify observers when game events happen. This is used for score updates, lives updates, enemy reactions, round changes, level changes, player death, and game over.
 
-To be able to see the webpage you can start a python webserver in the build_web folder
+- **Service Locator Pattern**  
+  The sound system is accessed through a service locator, with a null sound system fallback.
 
-    python -m http.server
+- **Singleton Pattern**  
+  Engine-wide systems such as the scene manager, resource manager, input manager, and renderer use singleton access.
 
-Then browse to http://localhost:8000 and you're good to go.
+## Controls
 
-### On OSX
+In the menu, use the arrow keys or controller 0 D-pad to move through the options. Press Enter or the controller A button to confirm.
 
-On Mac you can use homebrew
+In single player, player 1 controls Q*bert with the arrow keys. Up jumps up-left, Right jumps up-right, Down jumps down-right, and Left jumps down-left. Controller 0 can also be used with the D-pad.
 
-    brew install cmake
-    brew install emscripten
-    brew install python
+In co-op, player 1 uses the arrow keys or controller 0. Player 2 uses WASD or controller 1. W jumps up-left, D jumps up-right, S jumps down-right, and A jumps down-left.
 
-In a terminal on OSX, navigate to the root folder. Run this: 
+In versus mode, player 1 controls Q*bert with the normal player 1 controls. Player 2 controls Coily after it hatches, using WASD or controller 1.
 
-    mkdir build_web
-    cd build_web
-    emcmake cmake .. -DCMAKE_OSX_ARCHITECTURES=""
-    emmake make
+On the high-score entry screen, Up and Down change the selected letter, Left and Right move between the initials slots, and Enter submits the score. Controller 0 can also do this with the D-pad and A button.
 
-To be able to see the webpage you can start a python webserver in the build_web folder
-
-    python3 -m http.server
-
-Then browse to http://localhost:8000 and you're good to go.
-
-## Github Actions
-
-This project is build with github actions.
-- The CMake workflow builds the project in Debug and Release for Windows and serves as a check that the project builds on that platform.
-- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://avadae.github.io/minigin/). 
-  - The url of that page will be `https://<username>.github.io/<repository>/`
-- You can embed this page with 
-
-```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://<username>.github.io/<repository>/" loading="lazy"></iframe>```
-
+F1 can be used as a debug shortcut to skip to the next level.

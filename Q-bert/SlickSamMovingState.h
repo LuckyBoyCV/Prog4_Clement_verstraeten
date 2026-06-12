@@ -3,7 +3,7 @@
 
 namespace qbert
 {
-	// Slick/Sam is on a tile: checks for Q-bert collision, then jumps downward on an interval
+	// Slick/Sam is on a tile: checks for qbert collision, then jumps downward on an interval
 	class SlickSamMovingState final : public SlickSamState
 	{
 	public:

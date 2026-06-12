@@ -4,8 +4,8 @@
 
 namespace qbert
 {
-	// Keeps a TextComponent (on the same GameObject) in sync with a Q*bert's
-	// remaining lives. Observes that Q*bert's subject and refreshes on life loss.
+	// Keeps a TextComponent (on the same GameObject) in sync with a qbert's
+	// remaining lives. Observes that qbert's subject and refreshes on life loss.
 	class LivesDisplayComponent final : public dae::Component, public dae::Observer
 	{
 	public:

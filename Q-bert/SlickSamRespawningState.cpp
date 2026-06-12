@@ -16,7 +16,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamRespawningState::Update(Sli
 	if (m_timer < m_delay)
 		return nullptr;
 
-	// Delay elapsed — reappear at the assigned spawn tile
+	// Delay elapsed  reappear at the assigned spawn tile
 	slickSam.setRow(m_respawnRow);
 	slickSam.setCol(m_respawnCol);
 	glm::vec2 pos = slickSam.getPyramid()->getTileScreenPos(m_respawnRow, m_respawnCol);

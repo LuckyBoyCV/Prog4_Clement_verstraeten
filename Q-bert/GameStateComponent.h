@@ -37,6 +37,7 @@ namespace qbert
 		dae::Subject m_subject;
 
 	private:
+		void awardDiskBonus();      // 50 points per unused flying disc when a stage is cleared
 		void refreshBoard();        // re-colour, clear the pyramid, send players back to start
 		void endGame();             // mark the game over and fire GameOver once
 		void applyCurrentLevel();   // push the current level's flip rule (+ fixed colour) to the pyramid

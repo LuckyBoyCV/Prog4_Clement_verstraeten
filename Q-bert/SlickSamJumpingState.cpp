@@ -26,7 +26,7 @@ std::unique_ptr<qbert::SlickSamState> qbert::SlickSamJumpingState::Update(SlickS
 		slickSam.setCol(slickSam.getFutureCol());
 		slickSam.getOwner()->SetPosition(endPos.x + slickSam.getSpriteOffsetX(), endPos.y - slickSam.getSpriteOffsetY());
 
-		// onTile reverses the stepped tile and returns true if Q-bert was there (Slick/Sam dies)
+		// onTile reverses the stepped tile and returns true if qbert was there (Slick/Sam dies)
 		if (slickSam.onTile())
 			return std::make_unique<SlickSamRespawningState>(slickSam.getRespawnDuration(), 0, 0);
 

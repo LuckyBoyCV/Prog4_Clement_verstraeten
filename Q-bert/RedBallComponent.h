@@ -32,35 +32,35 @@ namespace qbert
 		void setSprite(int x, int y, int w, int h);
 
 		void OnNotify(dae::GameEvent event, dae::GameObject* pOwner) override;
-		// Called by JumpingState after landing; kills Q-bert if on the same tile
+		// Called by JumpingState after landing; kills qbert if on the same tile
 		void onTile();
 
 		// Accessors for state objects
-		PyramidComponent* getPyramid()       const { return m_pPyramid; }
-		QbertComponent*   getQbert()         const { return m_pQbert; }
-		dae::GameObject*  getOwner()         const { return m_Owner; }
-		int  getRow()         const { return m_row; }
-		int  getCol()         const { return m_col; }
-		int  getFutureRow()   const { return m_futureRow; }
-		int  getFutureCol()   const { return m_futureCol; }
-		void setRow(int r)          { m_row = r; }
-		void setCol(int c)          { m_col = c; }
-		void setFutureRow(int r)    { m_futureRow = r; }
-		void setFutureCol(int c)    { m_futureCol = c; }
+		PyramidComponent* getPyramid() const { return m_pPyramid; }
+		QbertComponent* getQbert() const { return m_pQbert; }
+		dae::GameObject* getOwner() const { return m_Owner; }
+		int getRow() const { return m_row; }
+		int getCol() const { return m_col; }
+		int getFutureRow() const { return m_futureRow; }
+		int  getFutureCol() const { return m_futureCol; }
+		void setRow(int row) { m_row = row; }
+		void setCol(int col) { m_col = col; }
+		void setFutureRow(int row) { m_futureRow = row; }
+		void setFutureCol(int col) { m_futureCol = col; }
 		float getSpriteOffsetX() const { return m_spriteOffsetX; }
 		float getSpriteOffsetY() const { return m_spriteOffsetY; }
-		float getJumpDuration()  const { return m_jumpDuration; }
-		float getJumpInterval()  const { return m_jumpInterval; }
+		float getJumpDuration() const { return m_jumpDuration; }
+		float getJumpInterval() const { return m_jumpInterval; }
 
 	private:
 		void SetState(std::unique_ptr<RedBallState> newState);
 
 		PyramidComponent* m_pPyramid;
-		QbertComponent*   m_pQbert;
-		int   m_row{ 0 };
-		int   m_col{ 0 };
-		int   m_futureRow{ 0 };
-		int   m_futureCol{ 0 };
+		QbertComponent* m_pQbert;
+		int m_row{ 0 };
+		int m_col{ 0 };
+		int m_futureRow{ 0 };
+		int m_futureCol{ 0 };
 
 		float m_jumpDuration{ 0.2f };
 		float m_jumpInterval{ 0.8f };
@@ -68,11 +68,11 @@ namespace qbert
 		float m_spriteOffsetX{ 30.f };
 
 		// Pending respawn set by OnNotify(PlayerDied) to avoid transitioning mid-Update
-		bool  m_pendingRespawn{ false };
+		bool m_pendingRespawn{ false };
 		float m_respawnDelay{ 0.f };
-		int   m_respawnRow{ 0 };
-		int   m_respawnCol{ 0 };
-		bool  m_active{ false };
+		int m_respawnRow{ 0 };
+		int m_respawnCol{ 0 };
+		bool m_active{ false };
 
 		std::unique_ptr<RedBallState> m_pState;
 	};

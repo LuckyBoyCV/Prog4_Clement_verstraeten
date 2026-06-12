@@ -65,7 +65,7 @@ void qbert::CoilyComponent::Update(float deltaTime)
 		return;
 	}
 
-	// Kill Q*bert if he lands on this tile while Coily is here (egg or snake)
+	// Kill qbert if he lands on this tile while Coily is here (egg or snake)
 	bool qbertJustLanded = m_qbertWasJumping && !m_pQbert->isJumping();
 	m_qbertWasJumping = m_pQbert->isJumping();
 	if (m_pState && m_pState->isDangerous() && qbertJustLanded && m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
@@ -136,7 +136,7 @@ void qbert::CoilyComponent::die()
 	if (!m_active) return;
 
 	// Bonus for luring Coily off the edge. Coily has no Subject of its own, so the score
-	// goes through Q*bert (which also notifies the score display).
+	// goes through qbert (which also notifies the score display).
 	if (m_pQbert)
 		m_pQbert->addScore(500);
 

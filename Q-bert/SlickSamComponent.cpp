@@ -71,6 +71,7 @@ bool qbert::SlickSamComponent::onTile()
 	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 	{
 		m_subject.Notify(dae::GameEvent::EnemyDied, m_Owner);
+		m_pQbert->addScore(300); // caught Slick/Sam
 		m_Owner->SetPosition(-1000.f, -1000.f);
 		return true; // caller should transition to respawn
 	}

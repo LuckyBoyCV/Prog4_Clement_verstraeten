@@ -28,27 +28,28 @@ namespace qbert
 		bool stepOn(Tile& tile);        // returns true if the step scored advanced the tile
 		bool isStepped() const;
 		void reset(); // clears every tile back to empty used on round advance
-		void setFlipRule(TileType type); // re-types every non-disc tile to this flip rule set per level from levels.json
+		void setFlipRule(TileType type); // re-types every non disc tile to this flip rule set per level from levels.json
 		void updateTileSprite(Tile& tile);
 		void reverseStep(Tile& tile);
 
 		glm::vec2 getTileScreenPos(int row, int col) const;
 		void setTileType(Tile& tile, TileType type);
 
-		// Flying discs that sit just off the left/right edges. (Re)placed each round.
+		// Flying discs that sit just off the left/right edges placed each round.
 		void placeDisks();
 		int getDiskIndexAt(int row, int col) const; // active disc at (row,col), or -1
+		int getActiveDiskCount() const;             // discs still unused this round (50 pts each at stage end)
 		Disk& getDisk(int index);
 		const Disk& getDisk(int index) const;
 		void consumeDisk(int index);                  // mark a ridden disc inactive
 
-		// Tile colour set: index into the sprite sheet's columns of cube colours.
-		// The pyramid tiles and the CHANGE TO swatch both use it; it changes per round.
+		// Tile colour set index into the sprite sheet's columns of cube colours.
+		// The pyramid tiles and the CHANGE TO swatch both use it it changes per round.
 		int getColorSet() const { return m_colorSet; }
 		void setColorSet(int set);
 
-		// The state a tile must reach to count as flipped this level (drives the CHANGE
-		// TO swatch and round completion): visitedTwice on level 2, otherwise visited.
+		// The state a tile must reach to count as flipped this level 
+		// visitedTwice on level 2, otherwise visited.
 		TileState getTargetState() const;
 
 		static constexpr int   colorSetCount  = 8;   // usable colour sets 
@@ -60,7 +61,7 @@ namespace qbert
 		static constexpr float StartX = 450.f;
 		static constexpr float StartY = 144.f;
 
-		// Row the two discs sit on; the player mounts them from the row below's edge tiles.
+		// Row the two discs sit on the player mounts them from the row belows edge tiles.
 		static constexpr int   DiskRow = 3;
 
 	private:

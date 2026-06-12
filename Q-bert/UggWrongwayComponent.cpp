@@ -79,7 +79,7 @@ bool qbert::UggWrongwayComponent::isJumping() const
 
 void qbert::UggWrongwayComponent::onTile()
 {
-	// Ugg/Wrongway are hazards, they never flip tiles, if Q*bert shares the tile we just
+	// Ugg/Wrongway are hazards, they never flip tiles, if qbert shares the tile we just
 	// landed on he loses a life, kill does nothing while he is airborne or safe
 	if (m_pQbert->getRow() == m_row && m_pQbert->getCol() == m_col)
 		m_pQbert->kill();

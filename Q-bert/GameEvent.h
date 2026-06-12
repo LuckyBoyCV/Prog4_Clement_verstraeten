@@ -3,6 +3,7 @@ namespace dae {
     enum class GameEvent
     {
         PlayerDied,
+        PlayerJumped,
         PlayerPickedUp,
         EnemyDied,
         PlayerFell,

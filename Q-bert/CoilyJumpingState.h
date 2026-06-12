@@ -4,7 +4,7 @@
 
 namespace qbert
 {
-	// Plays the arc jump animation; transitions to afterLand when done
+	// Plays the arc jump animation transitions to afterLand when done
 	class CoilyJumpingState final : public CoilyState
 	{
 	public:

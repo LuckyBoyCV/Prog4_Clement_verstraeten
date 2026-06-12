@@ -4,8 +4,8 @@
 
 namespace qbert
 {
-	// Q-bert jumped onto a flying disc: rides it from the disc up to the apex, then drops
-	// back to idle at the top. While riding, Q-bert's logical (row,col) is the disc's
+	// qbert jumped onto a flying disc: rides it from the disc up to the apex, then drops
+	// back to idle at the top. While riding, qbert's logical (row,col) is the disc's
 	// off-pyramid coord, which lures a chasing Coily off the edge to its death.
 	class QbertDiskRidingState final : public QbertState
 	{
@@ -15,7 +15,7 @@ namespace qbert
 		void onEnter(QbertComponent& qbert) override;
 		bool isRidingDisk() const override { return true; }
 	private:
-		int   m_diskIndex;
+		int m_diskIndex;
 		float m_timer{ 0.f };
 		glm::vec2 m_startPos{};
 		glm::vec2 m_apexPos{};

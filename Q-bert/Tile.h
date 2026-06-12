@@ -31,8 +31,8 @@ struct Tile
 	int spriteH{ 32 };
 };
 
-// A flying disc that floats just off the left/right edge of the pyramid. Q*bert can jump
-// onto one to ride up to the apex; it lives outside the m_Tiles triangle (col -1 or row+1).
+// A flying disc that floats just off the left/right edge of the pyramid. qbert can jump
+// onto one to ride up to the apex it lives outside the m_Tiles triangle (col -1 or row+1).
 struct Disk
 {
 	int row{};            // off-pyramid coord (matches the jump target that lands on it)

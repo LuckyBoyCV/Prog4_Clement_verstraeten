@@ -11,13 +11,11 @@ namespace
 		return (type == TileType::twice) ? TileState::visitedTwice : TileState::visited;
 	}
 
-	// Source rect of the disc sprite on sprites_Qbert.png. ESTIMATED from the sheet (the
-	// disc sits by the "Rotate disk colors" note, ~3rd sprite row); tweak to pixel-fit.
-	// The arcade disc also colour-cycles through several frames if you want to animate it.
-	constexpr float DiskSrcX = 176.f;
-	constexpr float DiskSrcY = 72.f;
-	constexpr float DiskSrcW = 32.f;
-	constexpr float DiskSrcH = 32.f;
+	// Source rect of the disc sprite 
+	constexpr float diskSrcX = 0.f;
+	constexpr float diskSrcY = 370.f;
+	constexpr float diskSrcW = 16.f;
+	constexpr float diskSrcH = 16.f;
 }
 
 qbert::PyramidComponent::PyramidComponent(dae::GameObject* pOwner)
@@ -122,13 +120,13 @@ void qbert::PyramidComponent::reset()
 
 TileState qbert::PyramidComponent::getTargetState() const
 {
-		// Every tile shares the level's flip rule, so the apex's type is representative.
+		// Every tile shares the level's flip rule
 	return TargetStateFor(m_Tiles[0][0].type);
 }
 
 void qbert::PyramidComponent::setFlipRule(TileType type)
 {
-	// Re-type every tile (discs excepted) so stepOn/isStepped follow this level's flip rule.
+	// Re-type every tile  so stepOn/isStepped follow this level's flip rule.
 	for (int r = 0; r < Rows; ++r)
 		for (int c = 0; c <= r; ++c)
 			if (m_Tiles[r][c].type != TileType::disk)
@@ -167,6 +165,7 @@ void qbert::PyramidComponent::updateTileSprite(Tile& tile)
 
 void qbert::PyramidComponent::reverseStep(Tile& tile)
 {
+	//revese the tile back
 	if (tile.state == TileState::visited)
 		tile.state = TileState::empty;
 	else if (tile.state == TileState::visitedTwice)
@@ -177,10 +176,11 @@ void qbert::PyramidComponent::reverseStep(Tile& tile)
 
 glm::vec2 qbert::PyramidComponent::getTileScreenPos(int row, int col) const
 {
+	// Calculate the screen position of a tile based on its row and column.
 	float x = StartX + (col - row * 0.5f) * TileW;
 	float y = StartY + row * (TileH - 20.f);
 	return { x,y };
-};
+}
 
 void qbert::PyramidComponent::setTileType(Tile& tile, TileType type)
 {
@@ -211,10 +211,11 @@ int qbert::PyramidComponent::getDiskIndexAt(int row, int col) const
 	for (int i = 0; i < static_cast<int>(m_Disks.size()); ++i)
 	{
 		const Disk& disk = m_Disks[i];
+		// Check if this disk is at the target position AND still active
 		if (disk.active && disk.row == row && disk.col == col)
-			return i;
+			return i;  // Found it—return the index
 	}
-	return -1;
+	return -1;  // Not found—return -1
 }
 
 Disk& qbert::PyramidComponent::getDisk(int index)
@@ -231,6 +232,15 @@ void qbert::PyramidComponent::consumeDisk(int index)
 {
 	if (index >= 0 && index < static_cast<int>(m_Disks.size()))
 		m_Disks[index].active = false;
+}
+
+int qbert::PyramidComponent::getActiveDiskCount() const
+{
+	int count = 0;
+	for (const auto& disk : m_Disks)
+		if (disk.active)
+			++count;
+	return count;
 }
 
 void qbert::PyramidComponent::Render()
@@ -259,9 +269,14 @@ void qbert::PyramidComponent::Render()
 		if (!disk.active)
 			continue;
 
-		SDL_FRect src{ DiskSrcX, DiskSrcY, DiskSrcW, DiskSrcH };
-		SDL_FRect dst{ disk.position.x, disk.position.y, TileW, TileH };
-		SDL_RenderTexture(renderer.GetSDLRenderer(),
-			m_tileTexture->GetSDLTexture(), &src, &dst);
+		SDL_FRect src{ diskSrcX, diskSrcY, diskSrcW, diskSrcH };
+		float scale = 0.75f;
+		float diskW = TileW * scale;
+		float diskH = TileH * scale;
+		SDL_FRect dst{ disk.position.x + (TileW - diskW) * 0.5f, 
+               disk.position.y + (TileH - diskH) * 0.5f, 
+               diskW, diskH };
+		SDL_RenderTexture(renderer.GetSDLRenderer()
+			,m_tileTexture->GetSDLTexture(), &src, &dst);
 	}
 }

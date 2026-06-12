@@ -71,6 +71,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
   Q-bert/MainMenuComponent.cpp
   Q-bert/EnemySpawnerComponent.cpp
   Q-bert/LevelConfig.cpp
+  Q-bert/HighScores.cpp
+  Q-bert/ScoreEntryComponent.cpp
+  Q-bert/gameOverComponent.cpp
+  Q-bert/SoundComponent.cpp
 )
 
 

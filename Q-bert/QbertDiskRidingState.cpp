@@ -14,12 +14,12 @@ void qbert::QbertDiskRidingState::onEnter(QbertComponent& qbert)
 	PyramidComponent* pyramid = qbert.getPyramid();
 	const Disk& disk = pyramid->getDisk(m_diskIndex);
 
-	// +30/-30 centres the sprite the same way every other state positions Q*bert.
+	//  centres the sprite the same way every other state positions qbert.
 	m_startPos = { disk.position.x + 30.f, disk.position.y - 30.f };
 	glm::vec2 apex = pyramid->getTileScreenPos(0, 0);
 	m_apexPos = { apex.x + 30.f, apex.y - 30.f };
 
-	// Report the disc's off-pyramid coord for the whole ride: this is what lures Coily.
+	// Report the disc's off-pyramid coord for the whole ride this is what lures Coily.
 	qbert.setRow(disk.row);
 	qbert.setCol(disk.col);
 }

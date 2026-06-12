@@ -6,6 +6,7 @@
 #include <queue>
 #include <string>
 #include <condition_variable>
+#include <atomic>
 #include <iostream>
 
 namespace dae
@@ -21,6 +22,12 @@ namespace dae
     public:
         Impl()
         {
+            if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
+            {
+                std::cout << "Failed to init SDL audio: " << SDL_GetError() << "\n";
+                return;
+            }
+
             if (!MIX_Init())
             {
                 std::cout << "Failed to initialize SDL_mixer: " << SDL_GetError() << "\n";
@@ -45,7 +52,8 @@ namespace dae
                 m_active = false;
             }
             m_wakeUp.notify_one();
-            m_workerThread.join();
+            if (m_workerThread.joinable())
+                m_workerThread.join();
 
             for (MIX_Track* pTrack : m_activeTracks)
             {
@@ -80,6 +88,10 @@ namespace dae
 
         void RequestPlay(sound_id id, float volume)
         {
+            // muted: drop the request rather than queue silence
+            if (m_muted)
+                return;
+
             {
                 std::lock_guard lock(m_queueMutex);
                 m_pendingRequests.push({ id, volume });
@@ -87,11 +99,18 @@ namespace dae
             m_wakeUp.notify_one();
         }
 
+        void SetMuted(bool muted) { m_muted = muted; }
+        bool IsMuted() const { return m_muted; }
+
         sound_id RegisterSound(const std::string& filePath)
         {
-            sound_id newId = m_nextId;
-            ++m_nextId;
-            m_soundPaths[newId] = filePath;
+            sound_id newId{};
+            {
+                std::lock_guard lock(m_queueMutex);
+                newId = m_nextId;
+                ++m_nextId;
+                m_soundPaths[newId] = filePath;
+            }
             std::cout << "Registered sound [" << newId << "]: " << filePath << "\n";
             return newId;
         }
@@ -111,12 +130,17 @@ namespace dae
                 {
                     PlaySoundRequest req{ m_pendingRequests.front() };
                     m_pendingRequests.pop();
+
+                    // grab the path while we still hold the lock so the worker never touches m_soundPaths unlocked
+                    auto pathIt = m_soundPaths.find(req.id);
+                    std::string path{ pathIt != m_soundPaths.end() ? pathIt->second : std::string{} };
+
                     lock.unlock();
 
                     if (m_loadedAudio.find(req.id) == m_loadedAudio.end())
                     {
-                        std::cout << "Loading sound [" << req.id << "]: " << m_soundPaths[req.id] << "\n";
-                        m_loadedAudio[req.id] = MIX_LoadAudio(m_pMixer, m_soundPaths[req.id].c_str(), false);
+                        std::cout << "Loading sound [" << req.id << "]: " << path << "\n";
+                        m_loadedAudio[req.id] = MIX_LoadAudio(m_pMixer, path.c_str(), false);
                     }
 
                     MIX_Audio* pAudio = m_loadedAudio[req.id];
@@ -150,6 +174,7 @@ namespace dae
         std::map<sound_id, MIX_Audio*> m_loadedAudio;
 
         bool m_active{ true };
+        std::atomic<bool> m_muted{ false };
         std::mutex m_queueMutex{};
         std::queue<PlaySoundRequest> m_pendingRequests{};
         std::condition_variable m_wakeUp{};
@@ -173,4 +198,14 @@ void dae::SDLSoundSystem::Play(sound_id id, float volume)
 dae::sound_id dae::SDLSoundSystem::RegisterSound(const std::string& filePath)
 {
     return m_pImpl->RegisterSound(filePath);
+}
+
+void dae::SDLSoundSystem::SetMuted(bool muted)
+{
+    m_pImpl->SetMuted(muted);
+}
+
+bool dae::SDLSoundSystem::IsMuted() const
+{
+    return m_pImpl->IsMuted();
 }

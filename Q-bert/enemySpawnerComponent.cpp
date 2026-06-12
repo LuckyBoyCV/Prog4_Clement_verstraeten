@@ -28,7 +28,7 @@ void qbert::EnemySpawnerComponent::setupRoundEnemies()
 
 	m_pCoily->activate();
 
-	// Build the rotation pool for this round
+	// Build the rotation  for this round
 	const int round = m_pGameState->getRound();
 	m_roundDescenders.clear();
 	if (round >= 2)
@@ -60,16 +60,16 @@ void qbert::EnemySpawnerComponent::Update(float deltaTime)
 	}
 
 	if (m_roundDescenders.empty())
-		return; // round 1: Coily only, nothing to pace
+		return; // round 1 Coily only, nothing to pace
 
-	// Coily already occupies one of the slots, so only kMaxConcurrent - 1 descenders fit.
+	// Coily already occupies one of the slots, so only maxSimultaneousEnemies - 1 descenders fit.
 	const int activeDescenders = (m_pCurrent != nullptr && m_pCurrent->isActive()) ? 1 : 0;
 	if (activeDescenders == 0)
 		m_pCurrent = nullptr;
 
 	if (activeDescenders >= maxSimultaneousEnemies - 1)
 	{
-		// Slot is full: let the descender run for a while, then rotate it out.
+		// Slot is full let the descender run for a while, then rotate it out.
 		m_lifeTimer += deltaTime;
 		if (m_lifeTimer >= descenderLife)
 		{
@@ -80,7 +80,7 @@ void qbert::EnemySpawnerComponent::Update(float deltaTime)
 		return;
 	}
 
-	// Slot is free: bring in the next eligible descender once the delay elapses.
+	// Slot is free bring in the next possible descender once the delay elapses.
 	m_descenderCooldownTimer += deltaTime;
 	const float delay = (m_rotationIndex == 0) ? firstDescenderDelay : descenderSpawnInterval;
 	if (m_descenderCooldownTimer >= delay)
@@ -102,7 +102,7 @@ void qbert::EnemySpawnerComponent::OnNotify(dae::GameEvent event, dae::GameObjec
 	}
 	else if (event == dae::GameEvent::EnemyDied)
 	{
-		// The active descender was eaten: free its slot so a different type rotates in.
+		// The active descender was eaten free its slot so a different type rotates in.
 		if (m_pCurrent)
 		{
 			m_pCurrent->deactivate();
